@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Load the anime dataset
 url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv"
 
-@st.cache_data
+@st.cache(allow_output_mutation=True)
 def load_data():
     return pd.read_csv(url)
 
@@ -59,7 +59,7 @@ scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
-@st.cache_data
+@st.cache(allow_output_mutation=True)
 def calculate_cosine_similarity(data):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
     features_scaled_ml = scaler_ml.transform(features_ml)
