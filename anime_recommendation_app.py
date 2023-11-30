@@ -169,7 +169,7 @@ if similar_titles:
         user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
 
         # Get and display recommendations using remapped data and ML model
-            if st.button("Get Recommendations"):
+        if st.button("Get Recommendations"):
             # Get content-based recommendations using remapped data and ML model
             recommendations_ml = content_based_recommendation_with_ml(user_likes_info_remapped, selected_title)
 
