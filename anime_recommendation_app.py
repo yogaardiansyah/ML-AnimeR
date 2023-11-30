@@ -60,17 +60,13 @@ features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_y
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
 # Define a cache for the cosine similarity matrix
-# Define a cache for the cosine similarity matrix
 @st.cache(allow_output_mutation=True)
 def calculate_cosine_similarity(data):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-    
-    # Replace NaN values with zeros
-    features_ml = features_ml.fillna(0)
-    
     features_scaled_ml = scaler_ml.transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
+
 
 # Function to get content-based recommendations
 def content_based_recommendation(user_data, title, num_recommendations=5, genre_weight=2):
@@ -82,9 +78,6 @@ def content_based_recommendation(user_data, title, num_recommendations=5, genre_
         st.warning(f"No information found for the anime: {title}")
         return pd.DataFrame()
 
-    # Calculate cosine similarity matrix
-    cosine_sim = calculate_cosine_similarity(data)
-
     # Map categorical data to numeric values for user input
     user_data['status'] = user_data['status'].map(status_mapping)
     user_data['media_type'] = user_data['media_type'].map(media_type_mapping)
@@ -95,12 +88,9 @@ def content_based_recommendation(user_data, title, num_recommendations=5, genre_
     # Get features for machine learning model
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
-    # Get features of the user's selected similar anime
-    user_features = user_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-    
     # Concatenate user features with the original data for similarity calculation
-    combined_features = pd.concat([features_ml, user_features])
-    
+    combined_features = pd.concat([features_ml, user_data])
+
     # Normalize feature scales using StandardScaler
     features_scaled_ml = scaler_ml.transform(combined_features)
 
