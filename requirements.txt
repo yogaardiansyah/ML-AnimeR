@@ -3,6 +3,5 @@ numpy==1.23.5
 pip==23.1.2
 tabulate==0.9.0
 streamlit
-pickle
 scikit-learn
 imblearn
