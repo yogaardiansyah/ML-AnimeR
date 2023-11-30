@@ -65,13 +65,13 @@ def calculate_cosine_similarity(data):
     return cosine_sim
 
 # Function to get content-based recommendations
-def content_based_recommendation(user_input, num_recommendations=5, genre_weight=2):
-    # Find the index corresponding to the user input title
-    user_index = data[data['title'] == user_input].index
+def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
+    # Ensure the input is a string
+    title = str(title)
 
     # Check if the user input exists in the dataset
-    if user_index.empty:
-        st.warning(f"No information found for the anime: {user_input}")
+    if title not in data['title'].values:
+        st.warning(f"No information found for the anime: {title}")
         return pd.DataFrame()
 
     # Calculate cosine similarity matrix
@@ -85,18 +85,18 @@ def content_based_recommendation(user_input, num_recommendations=5, genre_weight
     features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
     # Calculate cosine similarity between the user's preferred anime and all others
-    user_features = features_ml.iloc[user_index[0]]
-    user_features_scaled = scaler_ml.transform(user_features.values.reshape(1, -1))
+    user_features = features_ml[data['title'] == title]
+    user_features_scaled = scaler_ml.transform(user_features)
 
     # Get genres of the user's input anime
-    user_genres = data.iloc[user_index[0]]['genres'].split(',')
+    user_genres = data[data['title'] == title]['genres'].iloc[0].split(',')
 
     # Calculate cosine similarity between the user's preferred anime and all others
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
 
     # Modify the scoring to give higher weight to genre similarity
     sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
-    
+
     sim_scores = sim_scores[1:(num_recommendations + 1)]
     film_indices = [i[0] for i in sim_scores]
 
@@ -104,6 +104,7 @@ def content_based_recommendation(user_input, num_recommendations=5, genre_weight
     recommended_films = data.iloc[film_indices]
 
     return recommended_films
+
 
 # Streamlit app
 st.title("Anime Recommendation App")
