@@ -87,13 +87,6 @@ for genre in all_genres:
     data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
 
 # Normalize feature scales using StandardScaler for content-based recommendation
-# Replace NaN values with the mean of the column
-data.fillna(data.mean(), inplace=True)
-
-# Fill NaN values in genre columns with 0
-data[all_genres] = data[all_genres].fillna(0)
-
-# Normalize feature scales using StandardScaler for content-based recommendation
 scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
@@ -138,11 +131,15 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     user_features = features_ml[data['title'] == title]
     user_features_scaled = scaler_ml.transform(user_features)
 
+    # Get genres of the user's input anime
+    user_genres = data[data['title'] == title]['genres'].iloc[0].split(',')
+
+    # Calculate cosine similarity between the user's preferred anime and all others
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
 
     # Modify the scoring to give higher weight to genre similarity
     sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
-
+    
     sim_scores = sim_scores[1:(num_recommendations + 1)]
     film_indices = [i[0] for i in sim_scores]
 
