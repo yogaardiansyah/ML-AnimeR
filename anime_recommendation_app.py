@@ -60,9 +60,14 @@ features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_y
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
 # Define a cache for the cosine similarity matrix
+# Define a cache for the cosine similarity matrix
 @st.cache(allow_output_mutation=True)
 def calculate_cosine_similarity(data):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    
+    # Replace NaN values with zeros
+    features_ml = features_ml.fillna(0)
+    
     features_scaled_ml = scaler_ml.transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
