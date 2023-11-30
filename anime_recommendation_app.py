@@ -19,24 +19,6 @@ data['start_season_season'].fillna('unknown', inplace=True)
 data['rating'].fillna('r', inplace=True)
 data['source'].fillna('original', inplace=True)
 
-status_mapping = {'finished_airing': 1, 'currently_airing': 2, 'not_yet_aired': 3}
-data['status'] = data['status'].map(status_mapping)
-
-media_type_mapping = {'tv': 1, 'movie': 2, 'ova': 3, 'ona': 4, 'music': 5, 'special': 6, 'unknown': 7}
-data['media_type'] = data['media_type'].map(media_type_mapping)
-
-source_mapping = {'manga': 1, 'visual_novel': 2, 'original': 3, 'light_novel': 4,
-                  'web_manga': 5, 'novel': 6, '4_koma_manga': 7, 'game': 8,
-                  'other': 9, 'web_novel': 10, 'mixed_media': 11, 'music': 12,
-                  'card_game': 13, 'book': 14, 'picture_book': 15, 'radio': 16}
-data['source'] = data['source'].map(source_mapping)
-
-season_mapping = {'spring': 1, 'fall': 2, 'winter': 3, 'summer': 4}
-data['start_season_season'] = data['start_season_season'].map(season_mapping)
-
-rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
-data['rating'] = data['rating'].map(rating_mapping)
-
 # List of all genres
 all_genres = ['Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love', 'Comedy', 'Drama', 'Fantasy', 
               'Girls Love', 'Gourmet', 'Horror', 'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 
