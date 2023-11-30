@@ -111,9 +111,17 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
 
     return recommended_films
 
-# Function to get a random anime title
-def get_random_title():
-    return np.random.choice(data['title'])
+# Function to get similar titles based on a simple string match
+def search_similar_titles(user_input, num_similar_titles=5):
+    # Check if the user input exists in the dataset
+    if user_input not in data['title'].values:
+        st.warning(f"No information found for the anime: {user_input}")
+        return []
+
+    # Get similar titles based on a simple string match
+    similar_titles = data[data['title'].str.contains(user_input, case=False)]['title'].tolist()
+
+    return similar_titles[:num_similar_titles]
 
 # Streamlit app
 st.title("Anime Recommendation App")
@@ -121,7 +129,7 @@ st.title("Anime Recommendation App")
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
 
-# Button to trigger recommendations for user input
+# Button to trigger recommendations
 if st.button("Get Recommendations"):
     if user_input:
         # Display similar titles
@@ -129,33 +137,23 @@ if st.button("Get Recommendations"):
         if similar_titles:
             selected_title = st.selectbox("Select a similar title:", similar_titles)
 
-            # Display information for the selected title
-            user_likes_info, recommendations = content_based_recommendation(selected_title)
-            if not user_likes_info.empty:
-                st.subheader(f"Information for {selected_title}:")
-                st.table(user_likes_info)
+            if st.button("Get Recommendations for Similar Title"):
+                # Display information for the selected title
+                user_likes_info = data[data['title'] == selected_title]
+                if not user_likes_info.empty:
+                    st.subheader(f"Information for {selected_title}:")
+                    st.table(user_likes_info)
 
-                st.subheader(f"Recommended Anime for {selected_title}:")
-                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
-            else:
-                st.warning(f"No information found for the anime: {selected_title}")
+                    # Get and display recommendations
+                    recommendations = content_based_recommendation(selected_title)
+                    if not recommendations.empty:
+                        st.subheader(f"Recommended Anime for {selected_title}:")
+                        st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+                    else:
+                        st.warning(f"No recommendations found for {selected_title}")
+                else:
+                    st.warning(f"No information found for the anime: {selected_title}")
         else:
             st.warning(f"No similar titles found for the anime: {user_input}")
     else:
         st.warning("Please enter the name of an anime.")
-
-# Button to trigger recommendations for a random title
-if st.button("Get Recommendations for Random Title"):
-    # Get a random title
-    random_title = get_random_title()
-
-    # Display information for the selected title
-    user_likes_info, recommendations = content_based_recommendation(random_title)
-    if not user_likes_info.empty:
-        st.subheader(f"Information for Randomly Selected Title: {random_title}:")
-        st.table(user_likes_info)
-
-        st.subheader(f"Recommended Anime for {random_title}:")
-        st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
-    else:
-        st.warning(f"No information found for the anime: {random_title}")
