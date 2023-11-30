@@ -119,11 +119,13 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     scaler_ml = StandardScaler()
     features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
-    # Calculate cosine similarity between the user's preferred anime and all others
-    user_features = features_ml[data['title'] == title]
-    if user_features.empty:
+    # Check if the user input exists in the dataset
+    if title not in data['title'].values:
+        st.warning(f"No information found for the anime: {title}")
         return pd.DataFrame()
 
+    # Calculate cosine similarity between the user's preferred anime and all others
+    user_features = features_ml[data['title'] == title]
     user_features_scaled = scaler_ml.transform(user_features)
 
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
@@ -138,6 +140,7 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     recommended_films = data.iloc[film_indices]
 
     return recommended_films
+
 # Streamlit app
 st.title("Anime Recommendation App")
 
