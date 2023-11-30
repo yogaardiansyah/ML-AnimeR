@@ -12,6 +12,9 @@ url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv
 def load_data():
     return pd.read_csv(url)
 
+# Load data
+data = load_data()
+
 # Mapping categorical data to numeric values
 data['start_season_season'].fillna('unknown', inplace=True)
 data['rating'].fillna('r', inplace=True)
@@ -58,8 +61,6 @@ def calculate_cosine_similarity(data):
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
 
-# Load data
-data = load_data()
 
 # Check if cosine similarity matrix is cached
 if 'cosine_sim' not in st.session_state:
