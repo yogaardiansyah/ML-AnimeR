@@ -137,6 +137,7 @@ if st.button("Get Recommendations"):
         if similar_titles:
             selected_title = st.selectbox("Select a similar title:", similar_titles)
 
+            # Button to trigger recommendations for the selected title
             if st.button("Get Recommendations for Similar Title"):
                 # Display information for the selected title
                 user_likes_info = data[data['title'] == selected_title]
@@ -153,7 +154,5 @@ if st.button("Get Recommendations"):
                         st.warning(f"No recommendations found for {selected_title}")
                 else:
                     st.warning(f"No information found for the anime: {selected_title}")
-        else:
-            st.warning(f"No similar titles found for the anime: {user_input}")
-    else:
-        st.warning("Please enter the name of an anime.")
+else:
+    st.warning("Please enter the name of an anime.")
