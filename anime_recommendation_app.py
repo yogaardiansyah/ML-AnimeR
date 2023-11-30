@@ -65,6 +65,7 @@ def calculate_cosine_similarity(data):
     return cosine_sim
 
 # Function to get content-based recommendations
+# Function to get content-based recommendations
 def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     # Ensure the input is a string
     title = str(title)
@@ -104,6 +105,7 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     recommended_films = data.iloc[film_indices]
 
     return recommended_films
+
 
 # Function to get similar titles based on user input
 def get_similar_titles(user_input, num_similar_titles=5):
