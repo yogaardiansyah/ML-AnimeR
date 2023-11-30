@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Load the anime dataset
 url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv"
 
-@st.cache(allow_output_mutation=True, hash_funcs={pd.core.frame.DataFrame: lambda x: 0})
+@st.cache_data(allow_output_mutation=True)
 def load_data():
     return pd.read_csv(url)
 
@@ -53,23 +53,22 @@ all_genres = ['Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love'
 # Add columns for each genre
 for genre in all_genres:
     data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
-    
-@st.cache(allow_output_mutation=True)
+
+# Normalize feature scales using StandardScaler for content-based recommendation
+scaler_ml = StandardScaler()
+features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+features_scaled_ml = scaler_ml.fit_transform(features_ml)
+
+@st.cache_data(allow_output_mutation=True)
 def calculate_cosine_similarity(data):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
     features_scaled_ml = scaler_ml.transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
 
-
 # Check if cosine similarity matrix is cached
 if 'cosine_sim' not in st.session_state:
     st.session_state.cosine_sim = calculate_cosine_similarity(data)
-
-# Normalize feature scales using StandardScaler for content-based recommendation
-scaler_ml = StandardScaler()
-features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
 # Function to get content-based recommendations
 def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
