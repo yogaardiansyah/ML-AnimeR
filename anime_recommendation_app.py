@@ -135,7 +135,7 @@ if st.button("Get Recommendations"):
         # Display similar titles
         similar_titles = search_similar_titles(user_input)
         if similar_titles:
-            selected_title = st.selectbox("Select a similar title:", similar_titles)
+            selected_title = st.selectbox("Select a similar title:", similar_titles, key="similar_titles")
 
             # Button to trigger recommendations for the selected title
             if st.button("Get Recommendations for Similar Title"):
