@@ -150,3 +150,4 @@ if st.button("Get Recommendations"):
             st.warning(f"No similar titles found for the anime: {user_input}")
     else:
         st.warning("Please enter the name of an anime.")
+
