@@ -13,6 +13,26 @@ model_filename = 'animeR.sav'
 with open(model_filename, 'rb') as model_file:
     model_ml = pickle.load(model_file)
 
+#def 
+# Daftar semua genre yang ada
+all_genres = [
+    'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
+    'Comedy', 'Drama', 'Fantasy', 'Girls Love', 'Gourmet', 'Horror',
+    'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+    'Supernatural', 'Suspense', 'Ecchi', 'Erotica', 'Hentai',
+    'Adult Cast', 'Anthropomorphic', 'CGDCT', 'Childcare',
+    'Combat Sports', 'Crossdressing', 'Delinquents', 'Detective',
+    'Educational', 'Gag Humor', 'Gore', 'Harem', 'High Stakes Game',
+    'Historical', 'Idols (Female)', 'Idols (Male)', 'Isekai', 'Iyashikei',
+    'Love Polygon', 'Magical Sex Shift', 'Mahou Shoujo', 'Martial Arts',
+    'Mecha', 'Medical', 'Military', 'Music', 'Mythology', 'Organized Crime',
+    'Otaku Culture', 'Parody', 'Performing Arts', 'Pets', 'Psychological',
+    'Racing', 'Reincarnation', 'Reverse Harem', 'Romantic Subtext', 'Samurai',
+    'School', 'Showbiz', 'Space', 'Strategy Game', 'Super Power', 'Survival',
+    'Team Sports', 'Time Travel', 'Vampire', 'Video Game', 'Visual Arts',
+    'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
+]
+
 # Normalize feature scales using StandardScaler for content-based recommendation
 scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
