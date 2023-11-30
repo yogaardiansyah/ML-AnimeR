@@ -13,7 +13,6 @@ model_filename = 'animeR.sav'
 with open(model_filename, 'rb') as model_file:
     model_ml = pickle.load(model_file)
 
-#def 
 # Daftar semua genre yang ada
 all_genres = [
     'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
@@ -32,6 +31,10 @@ all_genres = [
     'Team Sports', 'Time Travel', 'Vampire', 'Video Game', 'Visual Arts',
     'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
 ]
+
+# Menambahkan kolom baru untuk setiap genre
+for genre in all_genres:
+    data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
 
 # Normalize feature scales using StandardScaler for content-based recommendation
 scaler_ml = StandardScaler()
