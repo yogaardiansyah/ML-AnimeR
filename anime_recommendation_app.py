@@ -68,7 +68,7 @@ def calculate_cosine_similarity(data):
     return cosine_sim
 
 # Function to get content-based recommendations using original data
-def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
+def content_based_recommendation_original(data, title, num_recommendations=5, genre_weight=2):
     # Ensure the input is a string
     title = str(title)
 
