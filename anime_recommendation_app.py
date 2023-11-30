@@ -91,9 +91,6 @@ scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
-# Calculate cosine similarity matrix for content-based recommendation
-cosine_sim = calculate_cosine_similarity(features_scaled_ml)
-
 # Define a cache for the cosine similarity matrix
 @st.cache
 def calculate_cosine_similarity(features_scaled_ml):
@@ -108,6 +105,8 @@ def content_based_recommendation(title, cosine_sim, df, num_recommendations=5, g
     scaler_ml = StandardScaler()
     features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
+    # Calculate cosine similarity matrix for content-based recommendation
+    cosine_sim = calculate_cosine_similarity(features_scaled_ml)
 
     user_features = features_ml[df['title'] == title]
     if user_features.empty:
