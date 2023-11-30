@@ -12,40 +12,6 @@ def load_data():
 
 data = load_data()
 
-# Streamlit app
-st.title("Anime Recommendation App")
-
-# User input for anime title
-user_input = st.text_input("Enter the name of an anime:")
-
-# Display similar titles
-similar_titles = search_similar_titles(user_input)
-if similar_titles:
-    # Form to select a similar title
-    with st.form("select_similar_title_form"):
-        selected_title = st.selectbox("Select a similar title:", similar_titles, key="similar_titles")
-        st.form_submit_button("Get Recommendations for Similar Title")
-
-    # Display information for the selected title (Original Data)
-    user_likes_info_original = data[data['title'] == selected_title]
-    if not user_likes_info_original.empty:
-        st.subheader(f"Information for {selected_title} (Original Data):")
-        st.table(user_likes_info_original)
-
-        # Remap user data for recommendation processing
-        user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
-
-        # Get and display recommendations using remapped data
-        if st.button("Get Recommendations"):
-            recommendations = content_based_recommendation_original(user_likes_info_remapped, selected_title)
-            if not recommendations.empty:
-                st.subheader(f"Recommended Anime for {selected_title}:")
-                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
-            else:
-                st.warning(f"No recommendations found for {selected_title}")
-else:
-    st.warning("Please enter the name of an anime.")
-
 # Function to get content-based recommendations using remapped data
 def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
     # Calculate cosine similarity matrix using original data
@@ -141,3 +107,37 @@ def search_similar_titles(user_input, num_similar_titles=5):
     similar_titles = data[data['title'].str.contains(user_input, case=False)]['title'].tolist()
 
     return similar_titles[:num_similar_titles]
+
+# Streamlit app
+st.title("Anime Recommendation App")
+
+# User input for anime title
+user_input = st.text_input("Enter the name of an anime:")
+
+# Display similar titles
+similar_titles = search_similar_titles(user_input)
+if similar_titles:
+    # Form to select a similar title
+    with st.form("select_similar_title_form"):
+        selected_title = st.selectbox("Select a similar title:", similar_titles, key="similar_titles")
+        st.form_submit_button("Get Recommendations for Similar Title")
+
+    # Display information for the selected title (Original Data)
+    user_likes_info_original = data[data['title'] == selected_title]
+    if not user_likes_info_original.empty:
+        st.subheader(f"Information for {selected_title} (Original Data):")
+        st.table(user_likes_info_original)
+
+        # Remap user data for recommendation processing
+        user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
+
+        # Get and display recommendations using remapped data
+        if st.button("Get Recommendations"):
+            recommendations = content_based_recommendation_original(user_likes_info_remapped, selected_title)
+            if not recommendations.empty:
+                st.subheader(f"Recommended Anime for {selected_title}:")
+                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+            else:
+                st.warning(f"No recommendations found for {selected_title}")
+else:
+    st.warning("Please enter the name of an anime.")
