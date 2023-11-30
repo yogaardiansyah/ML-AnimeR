@@ -105,6 +105,28 @@ def content_based_recommendation(user_input, num_recommendations=5, genre_weight
 
     return recommended_films
 
+# Streamlit app
+st.title("Anime Recommendation App")
+
+# User input for anime title
+user_input = st.text_input("Enter the name of an anime:")
+
+# Find the index corresponding to the user input title
+user_index = data[data['title'] == user_input].index
+
+# Check if the user input title exists in the dataset
+if not user_index.empty:
+    # Button to trigger recommendations
+    if st.button("Get Recommendations"):
+        recommendations = content_based_recommendation(user_index[0])
+        if not recommendations.empty:
+            st.subheader("Recommended Anime:")
+            st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+        else:
+            st.warning(f"No information found for the anime: {user_input}")
+else:
+    st.warning(f"No information found for the anime: {user_input}")
+
 
 if st.button("Get Recommendations"):
     if user_input:
