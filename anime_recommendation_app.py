@@ -12,13 +12,75 @@ def load_data():
 
 data = load_data()
 
+# List of all genres
+all_genres = ['Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love', 'Comedy', 'Drama', 'Fantasy', 
+              'Girls Love', 'Gourmet', 'Horror', 'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 
+              'Supernatural', 'Suspense', 'Ecchi', 'Erotica', 'Hentai', 'Adult Cast', 'Anthropomorphic', 'CGDCT', 
+              'Childcare', 'Combat Sports', 'Crossdressing', 'Delinquents', 'Detective', 'Educational', 'Gag Humor', 
+              'Gore', 'Harem', 'High Stakes Game', 'Historical', 'Idols (Female)', 'Idols (Male)', 'Isekai', 'Iyashikei', 
+              'Love Polygon', 'Magical Sex Shift', 'Mahou Shoujo', 'Martial Arts', 'Mecha', 'Medical', 'Military', 
+              'Music', 'Mythology', 'Organized Crime', 'Otaku Culture', 'Parody', 'Performing Arts', 'Pets', 
+              'Psychological', 'Racing', 'Reincarnation', 'Reverse Harem', 'Romantic Subtext', 'Samurai', 'School', 
+              'Showbiz', 'Space', 'Strategy Game', 'Super Power', 'Survival', 'Team Sports', 'Time Travel', 'Vampire', 
+              'Video Game', 'Visual Arts', 'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen']
+
+# Add columns for each genre
+for genre in all_genres:
+    data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
+
+# Normalize feature scales using StandardScaler for content-based recommendation
+scaler_ml = StandardScaler()
+features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+features_scaled_ml = scaler_ml.fit_transform(features_ml)
+
 # Function to calculate cosine similarity matrix
 @st.cache(allow_output_mutation=True)
-def calculate_cosine_similarity(data):
+def calculate_cosine_similarity(data, all_genres):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
     features_scaled_ml = scaler_ml.transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
+
+# Function to get content-based recommendations using remapped data
+def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
+    # Calculate cosine similarity matrix using original data
+    cosine_sim = calculate_cosine_similarity(data, all_genres)
+
+    # Get features for machine learning model using remapped data
+    features_ml_remapped = user_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+
+    # Map categorical data to numeric values for user input (remapped)
+    user_data_remapped = remap_user_data(user_data.copy())
+
+    # Get features of the user's selected similar anime (remapped)
+    user_features_remapped = user_data_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+
+    # Concatenate user features with the original data for similarity calculation
+    combined_features_remapped = pd.concat([features_ml_remapped, user_features_remapped])
+
+    # Normalize feature scales using StandardScaler
+    scaler_ml_remapped = StandardScaler()
+    features_scaled_ml_remapped = scaler_ml_remapped.fit_transform(combined_features_remapped)
+
+    # Get features of the user's selected similar anime (remapped)
+    user_features_scaled_remapped = features_scaled_ml_remapped[-1:]  # Last row corresponds to user input
+
+    # Get genres of the user's input anime (remapped)
+    user_genres_remapped = data[data['title'] == title]['genres'].iloc[0].split(',')
+
+    # Calculate cosine similarity between the user's preferred anime and all others
+    sim_scores_remapped = cosine_similarity(user_features_scaled_remapped, features_scaled_ml_remapped[:-1])
+
+    # Modify the scoring to give higher weight to genre similarity
+    sim_scores_remapped = sorted(enumerate(sim_scores_remapped[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres_remapped for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
+
+    sim_scores_remapped = sim_scores_remapped[:num_recommendations]
+    film_indices_remapped = [i[0] for i in sim_scores_remapped]
+
+    # Filter recommended films based on improved genre matching
+    recommended_films_remapped = data.iloc[film_indices_remapped]
+
+    return recommended_films_remapped
 
 # Function to remap user data
 def remap_user_data(user_data):
@@ -63,47 +125,6 @@ def remap_user_data(user_data):
 
     return user_data
 
-# Function to get content-based recommendations using remapped data
-def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
-    # Calculate cosine similarity matrix using original data
-    cosine_sim = calculate_cosine_similarity(data)
-
-    # Get features for machine learning model using remapped data
-    features_ml_remapped = user_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-
-    # Map categorical data to numeric values for user input (remapped)
-    user_data_remapped = remap_user_data(user_data.copy())
-
-    # Get features of the user's selected similar anime (remapped)
-    user_features_remapped = user_data_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-
-    # Concatenate user features with the original data for similarity calculation
-    combined_features_remapped = pd.concat([features_ml_remapped, user_features_remapped])
-
-    # Normalize feature scales using StandardScaler
-    scaler_ml_remapped = StandardScaler()
-    features_scaled_ml_remapped = scaler_ml_remapped.fit_transform(combined_features_remapped)
-
-    # Get features of the user's selected similar anime (remapped)
-    user_features_scaled_remapped = features_scaled_ml_remapped[-1:]  # Last row corresponds to user input
-
-    # Get genres of the user's input anime (remapped)
-    user_genres_remapped = data[data['title'] == title]['genres'].iloc[0].split(',')
-
-    # Calculate cosine similarity between the user's preferred anime and all others
-    sim_scores_remapped = cosine_similarity(user_features_scaled_remapped, features_scaled_ml_remapped[:-1])
-
-    # Modify the scoring to give higher weight to genre similarity
-    sim_scores_remapped = sorted(enumerate(sim_scores_remapped[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres_remapped for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
-
-    sim_scores_remapped = sim_scores_remapped[:num_recommendations]
-    film_indices_remapped = [i[0] for i in sim_scores_remapped]
-
-    # Filter recommended films based on improved genre matching
-    recommended_films_remapped = data.iloc[film_indices_remapped]
-
-    return recommended_films_remapped
-
 # Function to get similar titles based on a simple string match
 def search_similar_titles(user_input, num_similar_titles=5):
     # Check if the user input exists in the dataset
@@ -115,7 +136,6 @@ def search_similar_titles(user_input, num_similar_titles=5):
     similar_titles = data[data['title'].str.contains(user_input, case=False)]['title'].tolist()
 
     return similar_titles[:num_similar_titles]
-
 
 # Streamlit app
 st.title("Anime Recommendation App")
