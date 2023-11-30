@@ -12,6 +12,15 @@ def load_data():
 
 data = load_data()
 
+# Function to calculate cosine similarity matrix
+@st.cache(allow_output_mutation=True)
+def calculate_cosine_similarity(data):
+    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    features_scaled_ml = scaler_ml.transform(features_ml)
+    cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
+    return cosine_sim
+
+
 # Function to get content-based recommendations using remapped data
 def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
     # Calculate cosine similarity matrix using original data
