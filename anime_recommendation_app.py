@@ -112,10 +112,6 @@ def get_similar_titles(user_input, num_similar_titles=5):
     # Get features for machine learning model
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
-    # Normalize feature scales using StandardScaler
-    scaler_ml = StandardScaler()
-    features_scaled_ml = scaler_ml.fit_transform(features_ml)
-
     # Check if the user input exists in the dataset
     if user_input not in data['title'].values:
         st.warning(f"No information found for the anime: {user_input}")
@@ -124,8 +120,18 @@ def get_similar_titles(user_input, num_similar_titles=5):
     # Get index of the user's input anime
     input_index = data[data['title'] == user_input].index[0]
 
+    # Get features of the user's input anime
+    user_features = features_ml.iloc[input_index]
+
+    # Replace NaN values with 0
+    user_features.fillna(0, inplace=True)
+
+    # Normalize feature scales using StandardScaler
+    scaler_ml = StandardScaler()
+    features_scaled_ml = scaler_ml.fit_transform(features_ml)
+
     # Calculate cosine similarity between the user's input anime and all others
-    sim_scores = cosine_similarity([features_scaled_ml[input_index]], features_scaled_ml)
+    sim_scores = cosine_similarity([user_features], features_scaled_ml)
 
     # Get indices of similar titles
     similar_indices = sim_scores.argsort()[0][-num_similar_titles-1:-1][::-1]
@@ -134,6 +140,7 @@ def get_similar_titles(user_input, num_similar_titles=5):
     similar_titles = data.iloc[similar_indices]['title'].tolist()
 
     return similar_titles
+
 
 
 # Streamlit app
