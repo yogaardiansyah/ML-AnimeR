@@ -61,14 +61,14 @@ def calculate_cosine_similarity(data, all_genres):
 def content_based_recommendation_with_ml(user_data, title, num_recommendations=5, genre_weight=2):
 
     # Remap user data for recommendation processing
-user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
-user_features_remapped = user_likes_info_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
+    user_features_remapped = user_likes_info_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
 # Map categorical data to numeric values for user input (remapped)
-user_data_remapped = remap_user_data(user_data.copy())
+    user_data_remapped = remap_user_data(user_data.copy())
 
 # Get features of the user's selected similar anime (remapped)
-user_features_remapped = user_data_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    user_features_remapped = user_data_remapped[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
 
     # Calculate cosine similarity matrix using original data
