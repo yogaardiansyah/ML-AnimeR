@@ -128,7 +128,8 @@ else:
     st.warning(f"No information found for the anime: {user_input}")
 
 
-if st.button("Get Recommendations"):
+# Button to trigger recommendations
+if st.button("Get Recommendations", key="get_recommendations_button"):
     if user_input:
         recommendations = content_based_recommendation(user_input)
         if not recommendations.empty:
@@ -138,3 +139,4 @@ if st.button("Get Recommendations"):
             st.warning(f"No information found for the anime: {user_input}")
     else:
         st.warning("Please enter the name of an anime.")
+
