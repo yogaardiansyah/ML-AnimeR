@@ -104,6 +104,19 @@ def content_based_recommendation_original(user_data, title, num_recommendations=
 
     return recommended_films_remapped
 
+# Function to get similar titles based on a simple string match
+def search_similar_titles(user_input, num_similar_titles=5):
+    # Check if the user input exists in the dataset
+    if user_input not in data['title'].values:
+        st.warning(f"No information found for the anime: {user_input}")
+        return []
+
+    # Get similar titles based on a simple string match
+    similar_titles = data[data['title'].str.contains(user_input, case=False)]['title'].tolist()
+
+    return similar_titles[:num_similar_titles]
+
+
 # Streamlit app
 st.title("Anime Recommendation App")
 
