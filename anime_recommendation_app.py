@@ -12,20 +12,6 @@ url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv
 def load_data():
     return pd.read_csv(url)
 
-@st.cache(allow_output_mutation=True)
-def calculate_cosine_similarity(data):
-    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-    features_scaled_ml = scaler_ml.transform(features_ml)
-    cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
-    return cosine_sim
-
-# Load data
-data = load_data()
-
-# Check if cosine similarity matrix is cached
-if 'cosine_sim' not in st.session_state:
-    st.session_state.cosine_sim = calculate_cosine_similarity(data)
-
 # Mapping categorical data to numeric values
 data['start_season_season'].fillna('unknown', inplace=True)
 data['rating'].fillna('r', inplace=True)
@@ -64,6 +50,20 @@ all_genres = ['Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love'
 # Add columns for each genre
 for genre in all_genres:
     data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
+    
+@st.cache(allow_output_mutation=True)
+def calculate_cosine_similarity(data):
+    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    features_scaled_ml = scaler_ml.transform(features_ml)
+    cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
+    return cosine_sim
+
+# Load data
+data = load_data()
+
+# Check if cosine similarity matrix is cached
+if 'cosine_sim' not in st.session_state:
+    st.session_state.cosine_sim = calculate_cosine_similarity(data)
 
 # Normalize feature scales using StandardScaler for content-based recommendation
 scaler_ml = StandardScaler()
