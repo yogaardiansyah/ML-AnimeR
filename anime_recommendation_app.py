@@ -67,22 +67,6 @@ def calculate_cosine_similarity(data):
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
 
-
-# Function to get content-based recommendations
-# Fungsi untuk menampilkan dataframe dalam format tabulate
-def display_tabulated_dataframe(df):
-    print(tabulate(df, headers='keys', tablefmt='pretty', showindex=False))
-
-# Pilih kolom yang akan digunakan sebagai fitur untuk rekomendasi
-features = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-
-# Normalisasi skala fitur menggunakan StandardScaler
-scaler = StandardScaler()
-features_scaled = scaler.fit_transform(features)
-
-# Hitung matriks kemiripan kosinus antar film
-cosine_sim = cosine_similarity(features_scaled, features_scaled)
-
 # Function to get content-based recommendations
 def content_based_recommendation(user_data, title, num_recommendations=5, genre_weight=2):
     # Ensure the input is a string
@@ -92,6 +76,9 @@ def content_based_recommendation(user_data, title, num_recommendations=5, genre_
     if title not in data['title'].values:
         st.warning(f"No information found for the anime: {title}")
         return pd.DataFrame()
+
+    # Calculate cosine similarity matrix
+    cosine_sim = calculate_cosine_similarity(data)
 
     # Map categorical data to numeric values for user input
     user_data['status'] = user_data['status'].map(status_mapping)
@@ -103,9 +90,12 @@ def content_based_recommendation(user_data, title, num_recommendations=5, genre_
     # Get features for machine learning model
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
+    # Get features of the user's selected similar anime
+    user_features = user_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    
     # Concatenate user features with the original data for similarity calculation
-    combined_features = pd.concat([features_ml, user_data])
-
+    combined_features = pd.concat([features_ml, user_features])
+    
     # Normalize feature scales using StandardScaler
     features_scaled_ml = scaler_ml.transform(combined_features)
 
