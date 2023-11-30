@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Load the anime dataset
 url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv"
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache_data
 def load_data():
     return pd.read_csv(url)
 
