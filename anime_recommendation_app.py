@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.ensemble import RandomForestClassifier
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import joblib
 
 # Load the anime dataset
 url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv"
@@ -33,6 +38,9 @@ scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
+# Load the machine learning model
+model_ml = joblib.load(animeR.sav)
+
 # Function to calculate cosine similarity matrix
 @st.cache(allow_output_mutation=True)
 def calculate_cosine_similarity(data, all_genres):
@@ -42,7 +50,7 @@ def calculate_cosine_similarity(data, all_genres):
     return cosine_sim
 
 # Function to get content-based recommendations using remapped data
-def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
+def content_based_recommendation_with_ml(user_data, title, num_recommendations=5, genre_weight=2):
     # Calculate cosine similarity matrix using original data
     cosine_sim = calculate_cosine_similarity(data, all_genres)
 
@@ -63,13 +71,13 @@ def content_based_recommendation_original(user_data, title, num_recommendations=
     features_scaled_ml_remapped = scaler_ml_remapped.fit_transform(combined_features_remapped)
 
     # Get features of the user's selected similar anime (remapped)
-    user_features_scaled_remapped = features_scaled_ml_remapped[-1:]  # Last row corresponds to user input
+    user_features_scaled_ml_remapped = features_scaled_ml_remapped[-1:]  # Last row corresponds to user input
 
     # Get genres of the user's input anime (remapped)
     user_genres_remapped = data[data['title'] == title]['genres'].iloc[0].split(',')
 
     # Calculate cosine similarity between the user's preferred anime and all others
-    sim_scores_remapped = cosine_similarity(user_features_scaled_remapped, features_scaled_ml_remapped[:-1])
+    sim_scores_remapped = cosine_similarity(user_features_scaled_ml_remapped, features_scaled_ml_remapped[:-1])
 
     # Modify the scoring to give higher weight to genre similarity
     sim_scores_remapped = sorted(enumerate(sim_scores_remapped[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres_remapped for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
@@ -160,13 +168,20 @@ if similar_titles:
         # Remap user data for recommendation processing
         user_likes_info_remapped = remap_user_data(user_likes_info_original.copy())
 
-        # Get and display recommendations using remapped data
-        if st.button("Get Recommendations"):
-            recommendations = content_based_recommendation_original(user_likes_info_remapped, selected_title)
-            if not recommendations.empty:
-                st.subheader(f"Recommended Anime for {selected_title}:")
-                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+        # Get and display recommendations using remapped data and ML model
+             if st.button("Get Recommendations"):
+            # Get content-based recommendations using remapped data and ML model
+            recommendations_ml = content_based_recommendation_with_ml(user_likes_info_remapped, selected_title)
+
+            # Display recommended titles (Original Data)
+            st.subheader("Recommended Titles (Original Data):")
+            st.table(recommendations_ml[['title', 'genres', 'mean', 'rating', 'start_season_season']])
+
+            # Display recommended titles (Remapped Data)
+            st.subheader("Recommended Titles (Remapped Data):")
+            st.table(recommendations_ml[['title', 'genres', 'mean', 'rating', 'start_season_season']])
+
+            # If there are no similar titles
             else:
-                st.warning(f"No recommendations found for {selected_title}")
-else:
-    st.warning("Please enter the name of an anime.")
+            st.warning("No similar titles found.")
+# Note: Replace "path/to/your/model.pkl" with the actual path to your saved model file.
