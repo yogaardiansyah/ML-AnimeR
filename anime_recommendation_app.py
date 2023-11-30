@@ -135,19 +135,22 @@ print("User Input:", user_input)
 if st.button("Get Recommendations"):
     if user_input:
         # Display similar titles
-        similar_titles = search_similar_titles(user_input)
+        similar_titles = get_similar_titles(user_input)
         if similar_titles:
             selected_title = st.selectbox("Select a similar title:", similar_titles)
 
             if st.button("Get Recommendations for Similar Title"):
-                recommendations_for_similar_title = content_based_recommendation(selected_title)
-                if not recommendations_for_similar_title.empty:
+                # Display information for the selected title and its recommendations
+                user_likes_info, recommendations = content_based_recommendation_v9(selected_title, calculate_cosine_similarity(data), data, selected_title)
+                if not user_likes_info.empty:
+                    st.subheader(f"Information for {selected_title}:")
+                    st.table(user_likes_info)
+
                     st.subheader(f"Recommended Anime for {selected_title}:")
-                    st.table(recommendations_for_similar_title[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+                    st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
                 else:
                     st.warning(f"No information found for the anime: {selected_title}")
         else:
             st.warning(f"No similar titles found for the anime: {user_input}")
     else:
         st.warning("Please enter the name of an anime.")
-
