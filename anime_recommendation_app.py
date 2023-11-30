@@ -67,30 +67,23 @@ def calculate_cosine_similarity(data):
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
 
-# Function to get content-based recommendations
-def content_based_recommendation(user_data, title, num_recommendations=5, genre_weight=2):
+# Function to get content-based recommendations using original data
+def content_based_recommendation_original(user_data, title, num_recommendations=5, genre_weight=2):
     # Ensure the input is a string
     title = str(title)
 
     # Check if the user input exists in the dataset
-    if title not in data['title'].values:
+    if title not in original_data['title'].values:
         st.warning(f"No information found for the anime: {title}")
         return pd.DataFrame()
 
-    # Calculate cosine similarity matrix
-    cosine_sim = calculate_cosine_similarity(data)
+    # Calculate cosine similarity matrix using original data
+    cosine_sim = calculate_cosine_similarity(original_data)
 
-    # Map categorical data to numeric values for user input
-    user_data['status'] = user_data['status'].map(status_mapping)
-    user_data['media_type'] = user_data['media_type'].map(media_type_mapping)
-    user_data['source'] = user_data['source'].map(source_mapping)
-    user_data['start_season_season'] = user_data['start_season_season'].map(season_mapping)
-    user_data['rating'] = user_data['rating'].map(rating_mapping)
+    # Get features for machine learning model using original data
+    features_ml = original_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 
-    # Get features for machine learning model
-    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
-
-    # Get features of the user's selected similar anime
+    # Get features of the user's selected similar anime using original data
     user_features = user_data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
     
     # Concatenate user features with the original data for similarity calculation
@@ -99,25 +92,26 @@ def content_based_recommendation(user_data, title, num_recommendations=5, genre_
     # Normalize feature scales using StandardScaler
     features_scaled_ml = scaler_ml.transform(combined_features)
 
-    # Get features of the user's selected similar anime
+    # Get features of the user's selected similar anime using original data
     user_features_scaled = features_scaled_ml[-1:]  # Last row corresponds to user input
 
-    # Get genres of the user's input anime
-    user_genres = data[data['title'] == title]['genres'].iloc[0].split(',')
+    # Get genres of the user's input anime using original data
+    user_genres = original_data[original_data['title'] == title]['genres'].iloc[0].split(',')
 
-    # Calculate cosine similarity between the user's preferred anime and all others
+    # Calculate cosine similarity between the user's preferred anime and all others using original data
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml[:-1])
 
     # Modify the scoring to give higher weight to genre similarity
-    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
+    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in original_data['genres'].iloc[x[0]].split(','))), reverse=True)
 
     sim_scores = sim_scores[:num_recommendations]
     film_indices = [i[0] for i in sim_scores]
 
-    # Filter recommended films based on improved genre matching
-    recommended_films = data.iloc[film_indices]
+    # Filter recommended films based on improved genre matching using original data
+    recommended_films = original_data.iloc[film_indices]
 
     return recommended_films
+
 
 # Function to get similar titles based on a simple string match
 def search_similar_titles(user_input, num_similar_titles=5):
@@ -151,9 +145,9 @@ if similar_titles:
         st.subheader(f"Information for {selected_title}:")
         st.table(user_likes_info)
 
-        # Get and display recommendations
+        # Get and display recommendations using original data
         if st.button("Get Recommendations"):
-            recommendations = content_based_recommendation(user_likes_info, selected_title)
+            recommendations = content_based_recommendation_original(user_likes_info, selected_title)
             if not recommendations.empty:
                 st.subheader(f"Recommended Anime for {selected_title}:")
                 st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
