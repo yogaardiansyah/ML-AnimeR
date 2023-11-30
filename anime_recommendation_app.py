@@ -12,7 +12,6 @@ url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv
 def load_data():
     return pd.read_csv(url)
 
-# Load data
 data = load_data()
 
 # Mapping categorical data to numeric values
@@ -59,16 +58,13 @@ scaler_ml = StandardScaler()
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
+# Define a cache for the cosine similarity matrix
 @st.cache(allow_output_mutation=True)
 def calculate_cosine_similarity(data):
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
     features_scaled_ml = scaler_ml.transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
     return cosine_sim
-
-# Check if cosine similarity matrix is cached
-if 'cosine_sim' not in st.session_state:
-    st.session_state.cosine_sim = calculate_cosine_similarity(data)
 
 # Function to get content-based recommendations
 def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
@@ -141,6 +137,7 @@ if st.button("Get Recommendations"):
         if similar_titles:
             selected_title = st.selectbox("Select a similar title:", similar_titles)
 
+            # Button to trigger recommendations for the selected title
             if st.button("Get Recommendations for Similar Title"):
                 # Display information for the selected title
                 user_likes_info = data[data['title'] == selected_title]
@@ -157,7 +154,5 @@ if st.button("Get Recommendations"):
                         st.warning(f"No recommendations found for {selected_title}")
                 else:
                     st.warning(f"No information found for the anime: {selected_title}")
-        else:
-            st.warning(f"No similar titles found for the anime: {user_input}")
-    else:
-        st.warning("Please enter the name of an anime.")
+else:
+    st.warning("Please enter the name of an anime.")
