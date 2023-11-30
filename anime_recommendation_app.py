@@ -93,8 +93,19 @@ features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
 # Define a cache for the cosine similarity matrix
 @st.cache
-def calculate_cosine_similarity(features_scaled_ml):
-    return cosine_similarity(features_scaled_ml, features_scaled_ml)
+@st.cache(allow_output_mutation=True)
+def calculate_cosine_similarity(data):
+    # Get features for machine learning model
+    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+
+    # Normalize feature scales using StandardScaler
+    scaler_ml = StandardScaler()
+    features_scaled_ml = scaler_ml.fit_transform(features_ml)
+
+    # Calculate cosine similarity matrix
+    cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
+
+    return cosine_sim
 
 # Function to get content-based recommendations
 def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
