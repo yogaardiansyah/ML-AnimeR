@@ -105,12 +105,17 @@ def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
 
     return recommended_films
 
+# Function to get similar titles based on user input
 def get_similar_titles(user_input, num_similar_titles=5):
     # Calculate cosine similarity matrix
     cosine_sim = calculate_cosine_similarity(data)
 
     # Get features for machine learning model
     features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+
+    # Normalize feature scales using StandardScaler
+    scaler_ml = StandardScaler()
+    features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
     # Check if the user input exists in the dataset
     if user_input not in data['title'].values:
@@ -120,18 +125,8 @@ def get_similar_titles(user_input, num_similar_titles=5):
     # Get index of the user's input anime
     input_index = data[data['title'] == user_input].index[0]
 
-    # Get features of the user's input anime
-    user_features = features_ml.iloc[input_index]
-
-    # Replace NaN values with 0
-    user_features.fillna(0, inplace=True)
-
-    # Normalize feature scales using StandardScaler
-    scaler_ml = StandardScaler()
-    features_scaled_ml = scaler_ml.fit_transform(features_ml)
-
     # Calculate cosine similarity between the user's input anime and all others
-    sim_scores = cosine_similarity([user_features], features_scaled_ml)
+    sim_scores = cosine_similarity([features_scaled_ml[input_index]], features_scaled_ml)
 
     # Get indices of similar titles
     similar_indices = sim_scores.argsort()[0][-num_similar_titles-1:-1][::-1]
@@ -141,16 +136,11 @@ def get_similar_titles(user_input, num_similar_titles=5):
 
     return similar_titles
 
-
-
 # Streamlit app
 st.title("Anime Recommendation App")
 
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
-
-# Print user input for debugging
-print("User Input:", user_input)
 
 # Button to trigger recommendations
 if st.button("Get Recommendations"):
@@ -160,15 +150,16 @@ if st.button("Get Recommendations"):
             st.subheader("Recommended Anime:")
             st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
 
-            # Display similar titles
+            # Display similar titles as buttons
             similar_titles = get_similar_titles(user_input)
             selected_title = st.selectbox("Select a similar title:", similar_titles)
 
+            # Button to trigger recommendations for the selected title
             if st.button("Get Recommendations for Similar Title"):
-                recommendations_for_similar_title = content_based_recommendation(selected_title)
-                if not recommendations_for_similar_title.empty:
+                recommendations_for_selected_title = content_based_recommendation(selected_title)
+                if not recommendations_for_selected_title.empty:
                     st.subheader(f"Recommended Anime for {selected_title}:")
-                    st.table(recommendations_for_similar_title[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+                    st.table(recommendations_for_selected_title[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
                 else:
                     st.warning(f"No information found for the anime: {selected_title}")
         else:
