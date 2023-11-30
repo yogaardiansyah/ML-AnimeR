@@ -7,6 +7,8 @@ from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
+import requests
+from io import BytesIO
 
 # Load the anime dataset
 url = "https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv"
@@ -39,7 +41,13 @@ features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_y
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
 # Load the machine learning model
-model_ml = joblib.load(animeR.sav)
+model_url = "https://github.com/yogaardiansyah/ML-AnimeR/raw/main/animeR.sav"
+response = requests.get(model_url)
+response.raise_for_status()
+
+# Load the model from the response content
+model_ml = joblib.load(BytesIO(response.content))
+
 
 # Function to calculate cosine similarity matrix
 @st.cache(allow_output_mutation=True)
