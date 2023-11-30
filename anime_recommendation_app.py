@@ -129,30 +129,30 @@ st.title("Anime Recommendation App")
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
 
-# Button to trigger recommendations
-if st.button("Get Recommendations"):
-    if user_input:
-        # Display similar titles
-        similar_titles = search_similar_titles(user_input)
-        if similar_titles:
-            selected_title = st.selectbox("Select a similar title:", similar_titles, key="similar_titles")
+# Display similar titles
+similar_titles = search_similar_titles(user_input)
+if similar_titles:
+    # Form to select a similar title
+    with st.form("select_similar_title_form"):
+        selected_title = st.selectbox("Select a similar title:", similar_titles, key="similar_titles")
+        submit_button = st.form_submit_button("Get Recommendations for Similar Title")
 
-            # Button to trigger recommendations for the selected title
-            if st.button("Get Recommendations for Similar Title"):
-                # Display information for the selected title
-                user_likes_info = data[data['title'] == selected_title]
-                if not user_likes_info.empty:
-                    st.subheader(f"Information for {selected_title}:")
-                    st.table(user_likes_info)
+    # Button to trigger recommendations for the selected title
+    if submit_button:
+        # Display information for the selected title
+        user_likes_info = data[data['title'] == selected_title]
+        if not user_likes_info.empty:
+            st.subheader(f"Information for {selected_title}:")
+            st.table(user_likes_info)
 
-                    # Get and display recommendations
-                    recommendations = content_based_recommendation(selected_title)
-                    if not recommendations.empty:
-                        st.subheader(f"Recommended Anime for {selected_title}:")
-                        st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
-                    else:
-                        st.warning(f"No recommendations found for {selected_title}")
-                else:
-                    st.warning(f"No information found for the anime: {selected_title}")
+            # Get and display recommendations
+            recommendations = content_based_recommendation(selected_title)
+            if not recommendations.empty:
+                st.subheader(f"Recommended Anime for {selected_title}:")
+                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+            else:
+                st.warning(f"No recommendations found for {selected_title}")
+        else:
+            st.warning(f"No information found for the anime: {selected_title}")
 else:
     st.warning("Please enter the name of an anime.")
