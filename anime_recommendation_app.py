@@ -126,9 +126,6 @@ def search_similar_titles(user_input, num_similar_titles=5):
 # Streamlit app
 st.title("Anime Recommendation App")
 
-# User input for anime title
-user_input = st.text_input("Enter the name of an anime:")
-
 # Display similar titles
 similar_titles = search_similar_titles(user_input)
 if similar_titles:
