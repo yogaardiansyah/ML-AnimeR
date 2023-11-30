@@ -182,6 +182,6 @@ if similar_titles:
             st.table(recommendations_ml[['title', 'genres', 'mean', 'rating', 'start_season_season']])
 
             # If there are no similar titles
-            else:
+        else:
             st.warning("No similar titles found.")
 # Note: Replace "path/to/your/model.pkl" with the actual path to your saved model file.
