@@ -83,34 +83,51 @@ features_scaled = scaler.fit_transform(features)
 # Hitung matriks kemiripan kosinus antar film
 cosine_sim = cosine_similarity(features_scaled, features_scaled)
 
-def content_based_recommendation_v9(title, cosine_sim, df, user_preferences, num_recommendations=5, genre_weight=2):
+# Function to get content-based recommendations
+def content_based_recommendation(user_data, title, num_recommendations=5, genre_weight=2):
+    # Ensure the input is a string
+    title = str(title)
+
+    # Check if the user input exists in the dataset
+    if title not in data['title'].values:
+        st.warning(f"No information found for the anime: {title}")
+        return pd.DataFrame()
+
+    # Map categorical data to numeric values for user input
+    user_data['status'] = user_data['status'].map(status_mapping)
+    user_data['media_type'] = user_data['media_type'].map(media_type_mapping)
+    user_data['source'] = user_data['source'].map(source_mapping)
+    user_data['start_season_season'] = user_data['start_season_season'].map(season_mapping)
+    user_data['rating'] = user_data['rating'].map(rating_mapping)
+
     # Get features for machine learning model
-    features_ml = df[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+
+    # Concatenate user features with the original data for similarity calculation
+    combined_features = pd.concat([features_ml, user_data])
 
     # Normalize feature scales using StandardScaler
-    scaler_ml = StandardScaler()
-    features_scaled_ml = scaler_ml.fit_transform(features_ml)
+    features_scaled_ml = scaler_ml.transform(combined_features)
+
+    # Get features of the user's selected similar anime
+    user_features_scaled = features_scaled_ml[-1:]  # Last row corresponds to user input
+
+    # Get genres of the user's input anime
+    user_genres = data[data['title'] == title]['genres'].iloc[0].split(',')
 
     # Calculate cosine similarity between the user's preferred anime and all others
-    user_features = features_ml[df['title'] == user_preferences]
-    if user_features.empty:
-        print(f"No information found for the anime: {user_preferences}")
-        return pd.DataFrame(), pd.DataFrame()
-
-    user_features_scaled = scaler_ml.transform(user_features)
-
-    sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
+    sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml[:-1])
 
     # Modify the scoring to give higher weight to genre similarity
-    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in df['genres'].iloc[x[0]].split(','))), reverse=True)
+    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in data['genres'].iloc[x[0]].split(','))), reverse=True)
 
-    sim_scores = sim_scores[1:(num_recommendations + 1)]
+    sim_scores = sim_scores[:num_recommendations]
     film_indices = [i[0] for i in sim_scores]
 
     # Filter recommended films based on improved genre matching
-    recommended_films = df.iloc[film_indices]
+    recommended_films = data.iloc[film_indices]
 
-    return user_features, recommended_films
+    return recommended_films
 
 # Function to get similar titles based on a simple string match
 def search_similar_titles(user_input, num_similar_titles=5):
@@ -139,18 +156,17 @@ if similar_titles:
         st.form_submit_button("Get Recommendations for Similar Title")
 
     # Display information for the selected title
-    user_likes_info, recommendations = content_based_recommendation_v9(selected_title, cosine_sim, data, user_input)
+    user_likes_info = original_data[original_data['title'] == selected_title]
     if not user_likes_info.empty:
         st.subheader(f"Information for {selected_title}:")
         st.table(user_likes_info)
 
         # Get and display recommendations
+        recommendations = content_based_recommendation(user_likes_info, selected_title)
         if not recommendations.empty:
             st.subheader(f"Recommended Anime for {selected_title}:")
             st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
         else:
             st.warning(f"No recommendations found for {selected_title}")
-    else:
-        st.warning(f"No information found for the anime: {selected_title}")
 else:
     st.warning("Please enter the name of an anime.")
