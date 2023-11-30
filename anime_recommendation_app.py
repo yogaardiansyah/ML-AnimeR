@@ -152,11 +152,12 @@ if similar_titles:
         st.table(user_likes_info)
 
         # Get and display recommendations
-        recommendations = content_based_recommendation(user_likes_info, selected_title)
-        if not recommendations.empty:
-            st.subheader(f"Recommended Anime for {selected_title}:")
-            st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
-        else:
-            st.warning(f"No recommendations found for {selected_title}")
+        if st.button("Get Recommendations"):
+            recommendations = content_based_recommendation(user_likes_info, selected_title)
+            if not recommendations.empty:
+                st.subheader(f"Recommended Anime for {selected_title}:")
+                st.table(recommendations[['title', 'genres', 'media_type', 'mean', 'rating', 'start_season_year']])
+            else:
+                st.warning(f"No recommendations found for {selected_title}")
 else:
     st.warning("Please enter the name of an anime.")
