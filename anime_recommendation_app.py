@@ -154,6 +154,9 @@ st.title("Anime Recommendation App")
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
 
+# Print user input for debugging
+print("User Input:", user_input)
+
 # Button to trigger recommendations
 if st.button("Get Recommendations"):
     if user_input:
