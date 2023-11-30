@@ -141,7 +141,6 @@ if st.button("Get Recommendations"):
                 if not user_likes_info.empty:
                     st.subheader(f"Information for {selected_title}:")
                     st.table(user_likes_info)
-
                     # Get and display recommendations
                     recommendations = content_based_recommendation(selected_title)
                     if not recommendations.empty:
