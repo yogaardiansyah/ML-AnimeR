@@ -65,6 +65,7 @@ def calculate_cosine_similarity(data):
     return cosine_sim
 
 # Function to get content-based recommendations
+# Function to get content-based recommendations
 def content_based_recommendation(title, num_recommendations=5, genre_weight=2):
     # Ensure the input is a string
     title = str(title)
@@ -120,12 +121,21 @@ def search_similar_titles(user_input, num_similar_titles=5):
     similar_titles = data[data['title'].str.contains(user_input, case=False)]['title'].tolist()
 
     return similar_titles[:num_similar_titles]
-    
+
+# Function to get a random anime title
+def get_random_title():
+    return random.choice(data['title'])
+
 # Streamlit app
 st.title("Anime Recommendation App")
 
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
+
+# Button to trigger recommendations for a random title
+if st.button("Get Recommendations for Random Title"):
+    user_input = get_random_title()
+    st.write(f"Randomly Selected Title: {user_input}")
 
 # Button to trigger recommendations
 if st.button("Get Recommendations"):
@@ -141,6 +151,7 @@ if st.button("Get Recommendations"):
                 if not user_likes_info.empty:
                     st.subheader(f"Information for {selected_title}:")
                     st.table(user_likes_info)
+
                     # Get and display recommendations
                     recommendations = content_based_recommendation(selected_title)
                     if not recommendations.empty:
