@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import random
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -13,6 +11,9 @@ def load_data():
     return pd.read_csv(url)
 
 data = load_data()
+
+# Create a copy of the original data for displaying non-remapped information
+original_data = data.copy()
 
 # Mapping categorical data to numeric values
 data['start_season_season'].fillna('unknown', inplace=True)
@@ -126,22 +127,6 @@ def search_similar_titles(user_input, num_similar_titles=5):
 # Streamlit app
 st.title("Anime Recommendation App")
 
-# Specify columns to check
-columns_to_check = ['start_season_season', 'rating', 'source']
-
-# Check for NaN values in specific columns
-nan_values = data[columns_to_check].isnull().sum()
-
-# Display the columns with NaN values
-st.write("Columns with NaN values after mapping:")
-st.write(nan_values)
-
-# Display rows with NaN values in specific columns
-rows_with_nan = data[data[columns_to_check].isnull().any(axis=1)]
-
-st.write("Rows with NaN values after mapping:")
-st.write(rows_with_nan)
-
 # User input for anime title
 user_input = st.text_input("Enter the name of an anime:")
 
@@ -154,7 +139,7 @@ if similar_titles:
         st.form_submit_button("Get Recommendations for Similar Title")
 
     # Display information for the selected title
-    user_likes_info = data[data['title'] == selected_title]
+    user_likes_info = original_data[original_data['title'] == selected_title]
     if not user_likes_info.empty:
         st.subheader(f"Information for {selected_title}:")
         st.table(user_likes_info)
