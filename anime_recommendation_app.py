@@ -87,7 +87,17 @@ for genre in all_genres:
     data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
 
 # Normalize feature scales using StandardScaler for content-based recommendation
+# Replace NaN values with the mean of the column
+data.fillna(data.mean(), inplace=True)
+
+# Fill NaN values in genre columns with 0
+data[all_genres] = data[all_genres].fillna(0)
+
+# Normalize feature scales using StandardScaler for content-based recommendation
 scaler_ml = StandardScaler()
+features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+features_scaled_ml = scaler_ml.fit_transform(features_ml)
+
 features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
 features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
