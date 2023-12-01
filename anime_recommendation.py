@@ -9,6 +9,7 @@ import streamlit as st
 def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
+original_data = load_original_data()
 print(original_data.columns)
 
 # Membuat peta untuk mengganti nilai string dengan integer
