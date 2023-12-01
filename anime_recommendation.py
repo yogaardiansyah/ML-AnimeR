@@ -8,6 +8,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
+print(original_data.columns)
+
 # Membuat peta untuk mengganti nilai string dengan integer
 status_mapping = {'finished_airing': 1, 'currently_airing': 2, 'not_yet_aired': 3}
 
@@ -34,6 +36,9 @@ def map_user_data(user_data):
     user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
     user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
     user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
+    # Example mapping in map_user_data function
+    user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
+
 
     # Menampilkan informasi kolom user data ke Streamlit
     st.write("User Data:")
