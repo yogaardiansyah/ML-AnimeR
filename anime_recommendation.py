@@ -69,7 +69,8 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
 
     # Prediksi
     sim_scores = cosine_similarity(user_features_scaled, model_ml)
-    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores.flatten()  # Flatten to 1D array
+    sim_scores = sorted(enumerate(sim_scores), key=lambda x: x[1], reverse=True)
 
     # Ambil indeks film teratas
     top_indices = [i[0] for i in sim_scores[:5]]
