@@ -62,7 +62,7 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
         return None, None
 
     print("Columns in DataFrame:", original_data.columns)  # Add this line to print columns
-    
+
     selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
     
     user_features = map_user_data(user_anime_info.loc[:, selected_columns])
@@ -75,3 +75,4 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     recommended_films = original_data.iloc[top_indices]
 
     return user_anime_info, recommended_films
+
