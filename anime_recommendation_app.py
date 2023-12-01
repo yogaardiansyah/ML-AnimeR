@@ -25,7 +25,7 @@ def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
-def make_prediction(original_data, title):
+def make_prediction(original_data, title,all_genres):
     # Ambil data untuk judul anime yang dicari
     user_anime_info = original_data[original_data['title'] == title]
 
