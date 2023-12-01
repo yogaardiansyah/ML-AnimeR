@@ -3,6 +3,7 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
+import streamlit as st
 
 # Fungsi untuk memuat data asli
 def load_original_data():
