@@ -1,5 +1,5 @@
 # anime_recommendation_app.py
-
+import pandas as pd
 import streamlit as st
 import joblib
 from anime_recommendation import load_original_data, make_prediction
