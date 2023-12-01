@@ -1,53 +1,67 @@
-# anime_recommendation.py
+# app.py
 
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
+import joblib
+from anime_recommendation import load_original_data, make_prediction
 
-# Fungsi untuk memuat data asli
-def load_original_data():
-    return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
+# Load model dan scaler
+model_ml = joblib.load('anime_recommendation_model.joblib')
+scaler_ml = joblib.load('anime_scaler.joblib')
 
-# Fungsi untuk melakukan pemetaan data pengguna
-def map_user_data(user_data):
-    try:
-        user_data.loc[:, 'status'] = user_data['status'].map(status_mapping)
-        user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
-        user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
-        user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
-        user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
-    except KeyError as e:
-        st.error(f"Terjadi kesalahan dalam pemetaan data pengguna: {e}")
-    return user_data
+# Fungsi state aplikasi untuk menyimpan data yang bisa berubah selama sesi aplikasi
+@st.cache(allow_output_mutation=True)
+def get_state():
+    return {
+        'user_likes_info': None,
+        'recommendations': None,
+        'X_resampled': None,
+    }
 
-# Fungsi untuk membuat prediksi berdasarkan input pengguna
-def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
-    try:
-        # Ambil data untuk judul anime yang dicari
-        user_anime_info = original_data[original_data['title'] == title]
+state = get_state()
 
-        if user_anime_info.empty:
-            st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
-            return None, None
+# Judul aplikasi
+st.title("Anime Recommendation App")
 
-        # Gunakan fungsi pemetaan
-        user_features = map_user_data(user_anime_info[all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
+# Baca DataFrame dari sumber eksternal dengan cache
+original_data = load_original_data()
 
-        # Normalisasi fitur
-        user_features_scaled = scaler_ml.transform(user_features)
+# Daftar semua genre yang ada
+all_genres = [
+    'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
+    'Comedy', 'Drama', 'Fantasy', 'Girls Love', 'Gourmet', 'Horror',
+    'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+    'Supernatural', 'Suspense', 'Ecchi', 'Erotica', 'Hentai',
+    'Adult Cast', 'Anthropomorphic', 'CGDCT', 'Childcare',
+    'Combat Sports', 'Crossdressing', 'Delinquents', 'Detective',
+    'Educational', 'Gag Humor', 'Gore', 'Harem', 'High Stakes Game',
+    'Historical', 'Idols (Female)', 'Idols (Male)', 'Isekai', 'Iyashikei',
+    'Love Polygon', 'Magical Sex Shift', 'Mahou Shoujo', 'Martial Arts',
+    'Mecha', 'Medical', 'Military', 'Music', 'Mythology', 'Organized Crime',
+    'Otaku Culture', 'Parody', 'Performing Arts', 'Pets', 'Psychological',
+    'Racing', 'Reincarnation', 'Reverse Harem', 'Romantic Subtext', 'Samurai',
+    'School', 'Showbiz', 'Space', 'Strategy Game', 'Super Power', 'Survival',
+    'Team Sports', 'Time Travel', 'Vampire', 'Video Game', 'Visual Arts',
+    'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
+]
 
-        # Prediksi
-        sim_scores = cosine_similarity(user_features_scaled, model_ml)
-        sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: x[1], reverse=True)
+# Membuat DataFrame dengan kolom-kolom baru untuk setiap genre
+genre_dummies = original_data['genres'].str.get_dummies(sep=', ')
+original_data = pd.concat([original_data, genre_dummies], axis=1)
 
-        # Ambil indeks film teratas
-        top_indices = [i[0] for i in sim_scores[:5]]
+# Input pengguna
+user_likes_input = st.text_input("Masukkan Judul Anime yang Anda Cari:")
 
-        # Ambil informasi film rekomendasi dari data asli
-        recommended_films = original_data.iloc[top_indices]
+# Tombol untuk membuat prediksi
+if st.button("Cari dan Dapatkan Rekomendasi") and user_likes_input:
+    # Pastikan X_resampled diakses sebelum pemanggilan fungsi make_prediction
+    X_resampled = state['X_resampled']
+    
+    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, user_likes_input, all_genres, scaler_ml, X_resampled)
 
-        return user_anime_info, recommended_films
-    except Exception as e:
-        st.error(f"Terjadi kesalahan dalam membuat prediksi: {e}")
-        return None, None
+if state['user_likes_info'] is not None:
+    st.subheader(f"Informasi Anime yang Dicari: {user_likes_input}")
+    st.write(state['user_likes_info'])
+
+if state['recommendations'] is not None:
+    st.subheader("Rekomendasi Anime untuk Pengguna:")
+    st.write(state['recommendations'])
