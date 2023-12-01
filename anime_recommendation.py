@@ -28,7 +28,7 @@ all_genres = [
 
 # Membuat DataFrame dengan kolom-kolom baru untuk setiap genre
 for genre in all_genres:
-    data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
+    original_data[genre] = original_data['genres'].apply(lambda x: 1 if genre in x else 0)
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, X_resampled):
