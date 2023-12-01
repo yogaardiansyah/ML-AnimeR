@@ -4,44 +4,11 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Fungsi untuk membaca data awal
 def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
-# Membuat peta untuk mengganti nilai string dengan integer
-status_mapping = {'finished_airing': 1, 'currently_airing': 2, 'not_yet_aired': 3}
-
-# Mengganti nilai string dengan integer
-data['status'] = data['status'].map(status_mapping)
-
-# Membuat peta untuk mengganti nilai string dengan integer
-media_type_mapping = {'tv': 1, 'movie': 2, 'ova': 3, 'ona': 4, 'music': 5, 'special': 6, 'unknown': 7}
-
-# Mengganti nilai string dengan integer
-data['media_type'] = data['media_type'].map(media_type_mapping)
-
-# Membuat peta untuk mengganti nilai string dengan integer
-source_mapping = {
-    'manga': 1, 'visual_novel': 2, 'original': 3, 'light_novel': 4,
-    'web_manga': 5, 'novel': 6, '4_koma_manga': 7, 'game': 8,
-    'other': 9, 'web_novel': 10, 'mixed_media': 11, 'music': 12,
-    'card_game': 13, 'book': 14, 'picture_book': 15, 'radio': 16
-}
-
-# Mengganti nilai string dengan integer
-data['source'] = data['source'].map(source_mapping)
-
-# Membuat peta untuk mengganti nilai string dengan integer
-season_mapping = {'spring': 1, 'fall': 2, 'winter': 3, 'summer': 4}
-
-# Mengganti nilai string dengan integer
-data['start_season_season'] = data['start_season_season'].map(season_mapping)
-
-# Membuat peta untuk mengganti nilai string dengan integer
-rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
-
-# Mengganti nilai string dengan integer
-data['rating'] = data['rating'].map(rating_mapping)
-
+# Fungsi untuk melakukan pemetaan data pengguna
 def map_user_data(user_data):
     # Lakukan pemetaan data pengguna
     user_data['status'] = user_data['status'].map(status_mapping)
@@ -50,7 +17,12 @@ def map_user_data(user_data):
     user_data['start_season_season'] = user_data['start_season_season'].map(season_mapping)
     user_data['rating'] = user_data['rating'].map(rating_mapping)
     
+    # Pastikan bahwa kolom yang masih memiliki nilai string diubah menjadi numerik
+    user_data['genre_column'] = user_data['genre_column'].map(genre_mapping)
+    # Tambahkan baris ini untuk setiap kolom yang masih memiliki nilai string
+
     return user_data
+
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
@@ -58,7 +30,7 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     user_anime_info = original_data[original_data['title'] == title]
 
     if user_anime_info.empty:
-        st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
+        print(f"Tidak ditemukan informasi untuk anime: {title}")
         return None, None
 
     # Gunakan fungsi pemetaan
@@ -68,7 +40,7 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     user_features_scaled = scaler_ml.transform(user_features)
 
     # Prediksi
-    sim_scores = cosine_similarity(user_features_scaled, X_resampled)
+    sim_scores = cosine_similarity(user_features_scaled, model_ml)
     sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: x[1], reverse=True)
 
     # Ambil indeks film teratas
