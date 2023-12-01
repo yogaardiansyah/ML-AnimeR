@@ -56,17 +56,8 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
         st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
         return None, None
 
-    # Pastikan semua kolom yang dibutuhkan ada sebelum menggunakan map_user_data
-    required_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
-    missing_columns = [col for col in required_columns if col not in user_anime_info.columns]
-
-    if missing_columns:
-        st.warning(f"Kolom berikut tidak ditemukan: {missing_columns}")
-        return None, None
-
     # Gunakan fungsi pemetaan
-    user_features = map_user_data(user_anime_info[required_columns])
-
+    user_features = map_user_data(user_anime_info[all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
 
     # Normalisasi fitur
     user_features_scaled = scaler_ml.transform(user_features)
