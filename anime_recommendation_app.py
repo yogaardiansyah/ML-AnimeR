@@ -1,32 +1,28 @@
 # anime_recommendation_app.py
 
-import pandas as pd  
+import pandas as pd
 import streamlit as st
 import joblib
 from anime_recommendation import load_original_data, make_prediction
 
-# Load model dan scaler
+# Load model and scaler
 model_ml = joblib.load('anime_recommendation_model.joblib')
 scaler_ml = joblib.load('anime_scaler.joblib')
 
-# Fungsi state aplikasi untuk menyimpan data yang bisa berubah selama sesi aplikasi
+# Function to get the app's state
 @st.cache(allow_output_mutation=True)
 def get_state():
-    return {
-        'user_likes_info': None,
-        'recommendations': None,
-        'X_resampled': None,
-    }
+    return {'user_likes_info': None, 'recommendations': None}
 
 state = get_state()
 
-# Judul aplikasi
+# App title
 st.title("Anime Recommendation App")
 
-# Baca DataFrame dari sumber eksternal dengan cache
+# Read DataFrame from an external source with caching
 original_data = load_original_data()
 
-# Daftar semua genre yang ada
+# Create a list of all genres
 all_genres = [
     'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
     'Comedy', 'Drama', 'Fantasy', 'Girls Love', 'Gourmet', 'Horror',
@@ -45,24 +41,23 @@ all_genres = [
     'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
 ]
 
-# Membuat DataFrame dengan kolom-kolom baru untuk setiap genre
+# Create DataFrame with new columns for each genre
 genre_dummies = original_data['genres'].str.get_dummies(sep=', ')
 original_data = pd.concat([original_data, genre_dummies], axis=1)
 
-# Input pengguna
+# User input
 user_likes_input = st.text_input("Masukkan Judul Anime yang Anda Cari:")
 
-# Tombol untuk membuat prediksi
+# Button to make predictions
 if st.button("Cari dan Dapatkan Rekomendasi") and user_likes_input:
-    # Pastikan X_resampled diakses sebelum pemanggilan fungsi make_prediction
-    X_resampled = state['X_resampled']
-    
-    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, user_likes_input, all_genres, scaler_ml, X_resampled)
+    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, user_likes_input, all_genres, scaler_ml, model_ml)
 
+# Display user likes info
 if state['user_likes_info'] is not None:
     st.subheader(f"Informasi Anime yang Dicari: {user_likes_input}")
     st.write(state['user_likes_info'])
 
+# Display recommendations
 if state['recommendations'] is not None:
     st.subheader("Rekomendasi Anime untuk Pengguna:")
     st.write(state['recommendations'])
@@ -71,7 +66,7 @@ if state['recommendations'] is not None:
     st.subheader("Genre Columns:")
     genre_columns = [genre for genre in all_genres if genre in original_data.columns]
     st.write(original_data[genre_columns])
-
+    
 # Button to get recommendations for a random title
 if st.button("Dapatkan Rekomendasi Berdasarkan Judul Acak"):
     random_title = original_data['title'].sample().iloc[0]  # Select a random title from the dataset
