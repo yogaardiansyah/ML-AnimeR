@@ -5,20 +5,17 @@ import streamlit as st
 import joblib
 from anime_recommendation import load_original_data, make_prediction
 
-# Load model and scaler
-model_ml = joblib.load('anime_recommendation_model.joblib')
-scaler_ml = joblib.load('anime_scaler.joblib')
-
 # Function to get the app's state
 @st.cache(allow_output_mutation=True)
 def get_state():
     return {'user_likes_info': None, 'recommendations': None, 'X_resampled': None}
 
+# Initialize the app state
 state = get_state()
-state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, state['X_resampled']
-                                                                     
-# App title
-st.title("Anime Recommendation App")
+
+# Load model and scaler
+model_ml = joblib.load('anime_recommendation_model.joblib')
+scaler_ml = joblib.load('anime_scaler.joblib')
 
 # Read DataFrame from an external source with caching
 original_data = load_original_data()
@@ -74,7 +71,7 @@ if st.button("Dapatkan Rekomendasi Berdasarkan Judul Acak"):
     st.subheader(f"Rekomendasi untuk Judul Acak: {random_title}")
 
     # Call the make_prediction function for the random title
-    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, state['X_resampled'])
+    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, model_ml)
 
     if state['user_likes_info'] is not None:
         st.write(state['user_likes_info'])
