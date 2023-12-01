@@ -20,6 +20,15 @@ def get_state():
 
 state = get_state()
 
+if state['recommendations'] is not None:
+    st.subheader("Rekomendasi Anime untuk Pengguna:")
+    st.write(state['recommendations'])
+
+    # Display the genre columns
+    st.subheader("Genre Columns:")
+    genre_columns = [genre for genre in all_genres if genre in original_data.columns]
+    st.write(original_data[genre_columns])
+
 # Judul aplikasi
 st.title("Anime Recommendation App")
 
