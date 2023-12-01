@@ -24,6 +24,29 @@ st.title("Anime Recommendation App")
 # Baca DataFrame dari sumber eksternal dengan cache
 original_data = load_original_data()
 
+# Daftar semua genre yang ada
+all_genres = [
+    'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
+    'Comedy', 'Drama', 'Fantasy', 'Girls Love', 'Gourmet', 'Horror',
+    'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+    'Supernatural', 'Suspense', 'Ecchi', 'Erotica', 'Hentai',
+    'Adult Cast', 'Anthropomorphic', 'CGDCT', 'Childcare',
+    'Combat Sports', 'Crossdressing', 'Delinquents', 'Detective',
+    'Educational', 'Gag Humor', 'Gore', 'Harem', 'High Stakes Game',
+    'Historical', 'Idols (Female)', 'Idols (Male)', 'Isekai', 'Iyashikei',
+    'Love Polygon', 'Magical Sex Shift', 'Mahou Shoujo', 'Martial Arts',
+    'Mecha', 'Medical', 'Military', 'Music', 'Mythology', 'Organized Crime',
+    'Otaku Culture', 'Parody', 'Performing Arts', 'Pets', 'Psychological',
+    'Racing', 'Reincarnation', 'Reverse Harem', 'Romantic Subtext', 'Samurai',
+    'School', 'Showbiz', 'Space', 'Strategy Game', 'Super Power', 'Survival',
+    'Team Sports', 'Time Travel', 'Vampire', 'Video Game', 'Visual Arts',
+    'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
+]
+
+# Membuat DataFrame dengan kolom-kolom baru untuk setiap genre
+for genre in all_genres:
+    original_data[genre] = original_data['genres'].apply(lambda x: 1 if genre in x else 0)
+    
 # Input pengguna
 user_likes_input = st.text_input("Masukkan Judul Anime yang Anda Cari:")
 
