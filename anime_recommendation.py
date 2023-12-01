@@ -60,7 +60,9 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
         st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
         return None, None
 
-    user_features = map_user_data(user_anime_info.loc[:, all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
+    selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
+    
+    user_features = map_user_data(user_anime_info.loc[:, selected_columns])
     user_features_scaled = scaler_ml.transform(user_features)
 
     sim_scores = cosine_similarity(user_features_scaled, model_ml)
@@ -70,4 +72,3 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     recommended_films = original_data.iloc[top_indices]
 
     return user_anime_info, recommended_films
-
