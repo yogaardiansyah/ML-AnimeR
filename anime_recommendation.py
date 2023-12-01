@@ -62,7 +62,7 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
         return None, None
 
     # Gunakan fungsi pemetaan
-    user_features = map_user_data(user_anime_info[all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
+    user_features = map_user_data(user_anime_info.loc[:, all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
 
     # Normalisasi fitur
     user_features_scaled = scaler_ml.transform(user_features)
