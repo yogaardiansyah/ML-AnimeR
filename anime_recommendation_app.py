@@ -1,6 +1,5 @@
-# app.py
+# anime_recommendation_app.py
 
-import pandas as pd  # Add this line for Pandas
 import streamlit as st
 import joblib
 from anime_recommendation import load_original_data, make_prediction
@@ -19,15 +18,6 @@ def get_state():
     }
 
 state = get_state()
-
-if state['recommendations'] is not None:
-    st.subheader("Rekomendasi Anime untuk Pengguna:")
-    st.write(state['recommendations'])
-
-    # Display the genre columns
-    st.subheader("Genre Columns:")
-    genre_columns = [genre for genre in all_genres if genre in original_data.columns]
-    st.write(original_data[genre_columns])
 
 # Judul aplikasi
 st.title("Anime Recommendation App")
@@ -75,3 +65,8 @@ if state['user_likes_info'] is not None:
 if state['recommendations'] is not None:
     st.subheader("Rekomendasi Anime untuk Pengguna:")
     st.write(state['recommendations'])
+
+    # Display the genre columns
+    st.subheader("Genre Columns:")
+    genre_columns = [genre for genre in all_genres if genre in original_data.columns]
+    st.write(original_data[genre_columns])
