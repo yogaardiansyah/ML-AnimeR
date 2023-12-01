@@ -6,8 +6,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 # Load model dan scaler
-model_ml = joblib.load('random_forest_model.joblib')
-scaler_ml = joblib.load('standard_scaler.joblib')
+model_ml = joblib.load('anime_recommendation_model.joblib')
+scaler_ml = joblib.load('anime_scaler.joblib')
 
 # Fungsi state aplikasi untuk menyimpan data yang bisa berubah selama sesi aplikasi
 @st.cache(allow_output_mutation=True)
