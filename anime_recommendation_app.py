@@ -1,5 +1,6 @@
 # app.py
 
+import pandas as pd  # Add this line for Pandas
 import streamlit as st
 import joblib
 from anime_recommendation import load_original_data, make_prediction
