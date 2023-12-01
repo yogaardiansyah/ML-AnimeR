@@ -48,6 +48,7 @@ def map_user_data(user_data):
     return user_data
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
+# Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     # Ambil data untuk judul anime yang dicari
     user_anime_info = original_data[original_data['title'] == title]
