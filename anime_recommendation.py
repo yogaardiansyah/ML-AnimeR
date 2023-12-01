@@ -7,6 +7,41 @@ from sklearn.metrics.pairwise import cosine_similarity
 def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
+# Membuat peta untuk mengganti nilai string dengan integer
+status_mapping = {'finished_airing': 1, 'currently_airing': 2, 'not_yet_aired': 3}
+
+# Mengganti nilai string dengan integer
+data['status'] = data['status'].map(status_mapping)
+
+# Membuat peta untuk mengganti nilai string dengan integer
+media_type_mapping = {'tv': 1, 'movie': 2, 'ova': 3, 'ona': 4, 'music': 5, 'special': 6, 'unknown': 7}
+
+# Mengganti nilai string dengan integer
+data['media_type'] = data['media_type'].map(media_type_mapping)
+
+# Membuat peta untuk mengganti nilai string dengan integer
+source_mapping = {
+    'manga': 1, 'visual_novel': 2, 'original': 3, 'light_novel': 4,
+    'web_manga': 5, 'novel': 6, '4_koma_manga': 7, 'game': 8,
+    'other': 9, 'web_novel': 10, 'mixed_media': 11, 'music': 12,
+    'card_game': 13, 'book': 14, 'picture_book': 15, 'radio': 16
+}
+
+# Mengganti nilai string dengan integer
+data['source'] = data['source'].map(source_mapping)
+
+# Membuat peta untuk mengganti nilai string dengan integer
+season_mapping = {'spring': 1, 'fall': 2, 'winter': 3, 'summer': 4}
+
+# Mengganti nilai string dengan integer
+data['start_season_season'] = data['start_season_season'].map(season_mapping)
+
+# Membuat peta untuk mengganti nilai string dengan integer
+rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
+
+# Mengganti nilai string dengan integer
+data['rating'] = data['rating'].map(rating_mapping)
+
 def map_user_data(user_data):
     # Lakukan pemetaan data pengguna
     user_data['status'] = user_data['status'].map(status_mapping)
