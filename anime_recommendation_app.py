@@ -48,11 +48,11 @@ all_genres = [
 for genre in all_genres:
     original_data[genre] = original_data['genres'].apply(lambda x: 1 if genre in x else 0)
     
-# Input pengguna
-user_likes_input = st.text_input("Masukkan Judul Anime yang Anda Cari:")
-
 # Tombol untuk membuat prediksi
 if st.button("Cari dan Dapatkan Rekomendasi") and user_likes_input:
+    # Pastikan X_resampled diakses sebelum pemanggilan fungsi make_prediction
+    X_resampled = state['X_resampled']
+    
     state['user_likes_info'], state['recommendations'] = make_prediction(original_data, user_likes_input, all_genres, scaler_ml, X_resampled)
 
 if state['user_likes_info'] is not None:
