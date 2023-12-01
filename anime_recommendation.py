@@ -33,13 +33,18 @@ season_mapping = {'spring': 1, 'fall': 2, 'winter': 3, 'summer': 4}
 rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
 
 # Fungsi untuk melakukan pemetaan data pengguna
-# Fungsi untuk melakukan pemetaan data pengguna
 def map_user_data(user_data):
-    columns_to_map = ['status', 'media_type', 'source', 'rating', 'start_season_season']  # Add 'start_season_season'
+    user_data.loc[:, 'status'] = user_data['status'].map(status_mapping)
+    user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
+    user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
+    user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
     
-    for column in columns_to_map:
-        if column in user_data.columns:
-            user_data[column] = user_data[column].map(status_mapping)
+    # Example mapping in map_user_data function
+    user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
+    
+    # Ensure that only existing columns are selected
+    selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
+    user_data = user_data[selected_columns]
 
     # Menampilkan informasi kolom user data ke Streamlit
     st.write("User Data:")
@@ -47,7 +52,6 @@ def map_user_data(user_data):
 
     return user_data
 
-# Fungsi untuk membuat prediksi berdasarkan input pengguna
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     # Ambil data untuk judul anime yang dicari
