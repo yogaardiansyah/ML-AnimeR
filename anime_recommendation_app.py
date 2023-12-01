@@ -71,3 +71,22 @@ if state['recommendations'] is not None:
     st.subheader("Genre Columns:")
     genre_columns = [genre for genre in all_genres if genre in original_data.columns]
     st.write(original_data[genre_columns])
+
+# Button to get recommendations for a random title
+if st.button("Dapatkan Rekomendasi Berdasarkan Judul Acak"):
+    random_title = original_data['title'].sample().iloc[0]  # Select a random title from the dataset
+    st.subheader(f"Rekomendasi untuk Judul Acak: {random_title}")
+
+    # Call the make_prediction function for the random title
+    state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, state['X_resampled'])
+
+    if state['user_likes_info'] is not None:
+        st.write(state['user_likes_info'])
+
+    if state['recommendations'] is not None:
+        st.write(state['recommendations'])
+
+        # Display the genre columns
+        st.subheader("Genre Columns:")
+        genre_columns = [genre for genre in all_genres if genre in original_data.columns]
+        st.write(original_data[genre_columns])
