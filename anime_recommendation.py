@@ -36,7 +36,12 @@ def map_user_data(user_data):
     user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
     user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
 
+    # Menampilkan informasi kolom user data ke Streamlit
+    st.write("User Data:")
+    st.write(user_data)
+
     return user_data
+
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
