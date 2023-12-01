@@ -54,28 +54,20 @@ def map_user_data(user_data):
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
-    # Ambil data untuk judul anime yang dicari
     user_anime_info = original_data[original_data['title'] == title]
 
     if user_anime_info.empty:
         st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
         return None, None
 
-    # Gunakan fungsi pemetaan
     user_features = map_user_data(user_anime_info.loc[:, all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']])
-
-    # Normalisasi fitur
     user_features_scaled = scaler_ml.transform(user_features)
 
-    # Prediksi
     sim_scores = cosine_similarity(user_features_scaled, model_ml)
-    sim_scores = sim_scores.flatten()  # Flatten to 1D array
-    sim_scores = sorted(enumerate(sim_scores), key=lambda x: x[1], reverse=True)
+    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: x[1], reverse=True)
 
-    # Ambil indeks film teratas
-    top_indices = [i[0] for i in sim_scores[:5]]
-
-    # Ambil informasi film rekomendasi dari data asli
+    top_indices = [i[0] for i in sim_scores]
     recommended_films = original_data.iloc[top_indices]
 
     return user_anime_info, recommended_films
+
