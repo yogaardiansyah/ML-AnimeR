@@ -15,7 +15,8 @@ def get_state():
     return {'user_likes_info': None, 'recommendations': None}
 
 state = get_state()
-
+state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, state['X_resampled']
+                                                                     
 # App title
 st.title("Anime Recommendation App")
 
