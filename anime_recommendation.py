@@ -7,6 +7,29 @@ from sklearn.metrics.pairwise import cosine_similarity
 def load_original_data():
     return pd.read_csv("https://raw.githubusercontent.com/yogaardiansyah/ML-AnimeR/main/anime.csv_exported.csv")
 
+# Daftar semua genre yang ada
+all_genres = [
+    'Action', 'Adventure', 'Avant Garde', 'Award Winning', 'Boys Love',
+    'Comedy', 'Drama', 'Fantasy', 'Girls Love', 'Gourmet', 'Horror',
+    'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+    'Supernatural', 'Suspense', 'Ecchi', 'Erotica', 'Hentai',
+    'Adult Cast', 'Anthropomorphic', 'CGDCT', 'Childcare',
+    'Combat Sports', 'Crossdressing', 'Delinquents', 'Detective',
+    'Educational', 'Gag Humor', 'Gore', 'Harem', 'High Stakes Game',
+    'Historical', 'Idols (Female)', 'Idols (Male)', 'Isekai', 'Iyashikei',
+    'Love Polygon', 'Magical Sex Shift', 'Mahou Shoujo', 'Martial Arts',
+    'Mecha', 'Medical', 'Military', 'Music', 'Mythology', 'Organized Crime',
+    'Otaku Culture', 'Parody', 'Performing Arts', 'Pets', 'Psychological',
+    'Racing', 'Reincarnation', 'Reverse Harem', 'Romantic Subtext', 'Samurai',
+    'School', 'Showbiz', 'Space', 'Strategy Game', 'Super Power', 'Survival',
+    'Team Sports', 'Time Travel', 'Vampire', 'Video Game', 'Visual Arts',
+    'Workplace', 'Josei', 'Kids', 'Seinen', 'Shoujo', 'Shounen'
+]
+
+# Membuat DataFrame dengan kolom-kolom baru untuk setiap genre
+for genre in all_genres:
+    data[genre] = data['genres'].apply(lambda x: 1 if genre in x else 0)
+
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, X_resampled):
     # Ambil data untuk judul anime yang dicari
