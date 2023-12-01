@@ -53,6 +53,7 @@ def map_user_data(user_data):
     return user_data
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
+# Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     user_anime_info = original_data[original_data['title'] == title]
 
@@ -60,6 +61,8 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
         st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
         return None, None
 
+    print("Columns in DataFrame:", original_data.columns)  # Add this line to print columns
+    
     selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
     
     user_features = map_user_data(user_anime_info.loc[:, selected_columns])
