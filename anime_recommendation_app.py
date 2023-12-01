@@ -14,6 +14,7 @@ def get_state():
     return {
         'user_likes_info': None,
         'recommendations': None,
+        'X_resampled': None,
     }
 
 state = get_state()
