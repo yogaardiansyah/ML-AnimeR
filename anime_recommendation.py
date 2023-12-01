@@ -32,7 +32,6 @@ rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
 def map_user_data(user_data):
     user_data.loc[:, 'status'] = user_data['status'].map(status_mapping)
     user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
-    user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
     user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
     user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
 
