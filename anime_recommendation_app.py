@@ -12,7 +12,10 @@ scaler_ml = joblib.load('anime_scaler.joblib')
 # Function to get the app's state
 @st.cache(allow_output_mutation=True)
 def get_state():
-    return {'user_likes_info': None, 'recommendations': None}
+    return {'user_likes_info': None, 'recommendations': None, 'X_resampled': None}
+
+# ...
+
 
 state = get_state()
 state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, state['X_resampled']
