@@ -7,7 +7,7 @@ from anime_data import display_tabulated_dataframe, get_all_genres
 def load_cached_data():
     model_ml, scaler_ml = load_model_and_scaler()
     data = load_data()
-    all_genres = get_all_genres()
+    all_genres = get_all_genres()  # Use the function to get the list of genres
     cosine_sim = preprocess_data(data, all_genres)
     return model_ml, scaler_ml, data, cosine_sim, all_genres
 
