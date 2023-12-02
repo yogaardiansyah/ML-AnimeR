@@ -46,7 +46,8 @@ def map_user_data(user_data):
     user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
 
     # Ensure that only existing columns are selected
-    selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
+    existing_columns = user_data.columns
+    selected_columns = [col for col in all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status'] if col in existing_columns]
     user_data = user_data[selected_columns]
 
     print("User Data After Column Selection:")
@@ -57,6 +58,7 @@ def map_user_data(user_data):
     st.write(user_data)
 
     return user_data
+
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
