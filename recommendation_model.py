@@ -46,7 +46,14 @@ def load_data():
     return data
 
 def preprocess_data(data, all_genres):
-    features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    try:
+        features_ml = data[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
+    except KeyError as e:
+        print(f"Error: {e}")
+        print(f"Columns in data: {data.columns}")
+        print(f"Requested columns: {all_genres + ['media_type', 'mean', 'rating', 'start_season_year']}")
+        raise e
+
     scaler_ml = StandardScaler()
     features_scaled_ml = scaler_ml.fit_transform(features_ml)
     cosine_sim = cosine_similarity(features_scaled_ml, features_scaled_ml)
