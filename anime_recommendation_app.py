@@ -43,6 +43,8 @@ all_genres = [
 genre_dummies = original_data['genres'].str.get_dummies(sep=', ')
 original_data = pd.concat([original_data, genre_dummies], axis=1)
 
+st.title("Rekomendasi Anime")
+
 # User input
 user_likes_input = st.text_input("Masukkan Judul Anime yang Anda Cari:")
 
@@ -53,17 +55,17 @@ if st.button("Cari dan Dapatkan Rekomendasi") and user_likes_input:
 # Display user likes info
 if state['user_likes_info'] is not None:
     st.subheader(f"Informasi Anime yang Dicari: {user_likes_input}")
-    st.write(state['user_likes_info'])
+    st.write(state['user_likes_info'].reset_index(drop=True))  # Reset index for consistency
 
 # Display recommendations
 if state['recommendations'] is not None:
     st.subheader("Rekomendasi Anime untuk Pengguna:")
-    st.write(state['recommendations'])
+    st.write(state['recommendations'].reset_index(drop=True))  # Reset index for consistency
 
     # Display the genre columns
     st.subheader("Genre Columns:")
     genre_columns = [genre for genre in all_genres if genre in original_data.columns]
-    st.write(original_data[genre_columns])
+    st.write(original_data[genre_columns].reset_index(drop=True))  # Reset index for consistency
     
 # Button to get recommendations for a random title
 if st.button("Dapatkan Rekomendasi Berdasarkan Judul Acak"):
@@ -74,12 +76,12 @@ if st.button("Dapatkan Rekomendasi Berdasarkan Judul Acak"):
     state['user_likes_info'], state['recommendations'] = make_prediction(original_data, random_title, all_genres, scaler_ml, model_ml)
 
     if state['user_likes_info'] is not None:
-        st.write(state['user_likes_info'])
+        st.write(state['user_likes_info'].reset_index(drop=True))  # Reset index for consistency
 
     if state['recommendations'] is not None:
-        st.write(state['recommendations'])
+        st.write(state['recommendations'].reset_index(drop=True))  # Reset index for consistency
 
         # Display the genre columns
         st.subheader("Genre Columns:")
         genre_columns = [genre for genre in all_genres if genre in original_data.columns]
-        st.write(original_data[genre_columns])
+        st.write(original_data[genre_columns].reset_index(drop=True))  # Reset index for consistency
