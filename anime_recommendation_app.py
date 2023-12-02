@@ -1,7 +1,6 @@
 # anime_recommendation_app.py
 import streamlit as st
-from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data, get_user_features
-from anime_data import get_all_genres  # Add this import
+from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data, get_user_features, get_all_genres  # Add get_all_genres
 
 @st.cache(allow_output_mutation=True)
 def load_cached_data():
