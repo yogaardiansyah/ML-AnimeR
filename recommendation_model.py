@@ -3,6 +3,9 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
+# anime_recommendation_app.py
+from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data, get_user_features
+
 
 def content_based_recommendation(title, cosine_sim, df, user_preferences, all_genres, num_recommendations=5, genre_weight=2):
     features_ml = df[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
