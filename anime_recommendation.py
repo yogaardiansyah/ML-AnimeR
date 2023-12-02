@@ -34,17 +34,23 @@ rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
 
 # Fungsi untuk melakukan pemetaan data pengguna
 def map_user_data(user_data):
+    print("Original User Data:")
+    print(user_data)
+
     user_data.loc[:, 'status'] = user_data['status'].map(status_mapping)
     user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
     user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
     user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
-    
+
     # Example mapping in map_user_data function
     user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
-    
+
     # Ensure that only existing columns are selected
     selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
     user_data = user_data[selected_columns]
+
+    print("User Data After Column Selection:")
+    print(user_data)
 
     # Menampilkan informasi kolom user data ke Streamlit
     st.write("User Data:")
