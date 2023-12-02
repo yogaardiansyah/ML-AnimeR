@@ -1,6 +1,6 @@
 # anime_recommendation_app.py
 import streamlit as st
-from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data
+from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data, get_user_features  # Change this import
 
 @st.cache(allow_output_mutation=True)
 def load_cached_data():
