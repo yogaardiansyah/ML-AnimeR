@@ -34,29 +34,17 @@ rating_mapping = {'r': 1, 'pg_13': 2, 'r+': 3, 'pg': 4, 'g': 5, 'rx': 6}
 
 # Fungsi untuk melakukan pemetaan data pengguna
 def map_user_data(user_data):
-    print("Original User Data:")
-    print(user_data)
-
     user_data.loc[:, 'status'] = user_data['status'].map(status_mapping)
     user_data.loc[:, 'media_type'] = user_data['media_type'].map(media_type_mapping)
     user_data.loc[:, 'source'] = user_data['source'].map(source_mapping)
     user_data.loc[:, 'rating'] = user_data['rating'].map(rating_mapping)
-
+    
     # Example mapping in map_user_data function
     user_data.loc[:, 'start_season_season'] = user_data['start_season_season'].map(season_mapping)
-
-    # Ensure that only existing columns are selected
-    existing_columns = user_data.columns
-    selected_columns = [col for col in all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status'] if col in existing_columns]
     
-    if not selected_columns:
-        st.warning("No common columns found between genres and user data. Please check your data.")
-        return None
-
+    # Ensure that only existing columns are selected
+    selected_columns = all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status']
     user_data = user_data[selected_columns]
-
-    print("User Data After Column Selection:")
-    print(user_data)
 
     # Menampilkan informasi kolom user data ke Streamlit
     st.write("User Data:")
@@ -64,16 +52,13 @@ def map_user_data(user_data):
 
     return user_data
 
-
-
-# Fungsi untuk membuat prediksi berdasarkan input pengguna
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
 def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
     user_anime_info = original_data[original_data['title'] == title]
 
     if user_anime_info.empty:
         st.warning(f"Tidak ditemukan informasi untuk anime: {title}")
-        return None, None
+        return pd.DataFrame(), pd.DataFrame()  # Return empty dataframes if no information found
 
     print("Columns in DataFrame:", original_data.columns)  # Add this line to print columns
 
@@ -90,3 +75,6 @@ def make_prediction(original_data, title, all_genres, scaler_ml, model_ml):
 
     return user_anime_info, recommended_films
 
+# main section for testing purposes
+if __name__ == "__main__":
+    pass  # Add any testing code if needed
