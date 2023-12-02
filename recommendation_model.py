@@ -16,7 +16,9 @@ def content_based_recommendation(title, cosine_sim, df, user_preferences, num_re
     user_features = features_ml[df['title'] == user_preferences]
     if user_features.empty:
         print(f"No information found for the anime: {user_preferences}")
-        return pd.DataFrame(), pd.DataFrame()    user_features_scaled = scaler_ml.transform(user_features)
+        return pd.DataFrame(), pd.DataFrame()  
+
+    user_features_scaled = scaler_ml.transform(user_features)
 
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
 
