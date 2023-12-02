@@ -20,7 +20,7 @@ def content_based_recommendation(title, cosine_sim, df, user_preferences, all_ge
 
     sim_scores = cosine_similarity(user_features_scaled, features_scaled_ml)
 
-    sim_scores = sort_and_filter_recommendations(sim_scores, df, user_genres, num_recommendations, genre_weight)
+    sim_scores = sort_and_filter_recommendations(sim_scores, df, all_genres, num_recommendations, genre_weight)
 
     recommended_films = df.iloc[sim_scores]
 
@@ -30,8 +30,8 @@ def get_user_features(df, user_preferences, features_ml, scaler_ml):
     user_features = features_ml[df['title'] == user_preferences]
     return user_features if not user_features.empty else pd.DataFrame()
 
-def sort_and_filter_recommendations(sim_scores, df, user_genres, num_recommendations, genre_weight):
-    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in user_genres for g in df['genres'].iloc[x[0]].split(','))), reverse=True)
+def sort_and_filter_recommendations(sim_scores, df, all_genres, num_recommendations, genre_weight):
+    sim_scores = sorted(enumerate(sim_scores[0]), key=lambda x: (x[1] + genre_weight * sum(g in all_genres for g in df['genres'].iloc[x[0]].split(','))), reverse=True)
     film_indices = [i[0] for i in sim_scores[1:(num_recommendations + 1)]]
     return film_indices
 
