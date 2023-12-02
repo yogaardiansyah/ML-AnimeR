@@ -3,9 +3,6 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
-# anime_recommendation_app.py
-from recommendation_model import content_based_recommendation, load_model_and_scaler, load_data, preprocess_data, get_user_features
-
 
 def content_based_recommendation(title, cosine_sim, df, user_preferences, all_genres, num_recommendations=5, genre_weight=2):
     features_ml = df[all_genres + ['media_type', 'mean', 'rating', 'start_season_year']]
@@ -13,7 +10,7 @@ def content_based_recommendation(title, cosine_sim, df, user_preferences, all_ge
     scaler_ml = StandardScaler()
     features_scaled_ml = scaler_ml.fit_transform(features_ml)
 
-    user_features = get_user_features(df, user_preferences, features_ml, scaler_ml)
+    user_features = get_user_features(df, user_preferences, features_ml, scaler_ml, all_genres)
 
     if user_features.empty:
         print(f"No information found for the anime: {user_preferences}")
@@ -29,7 +26,7 @@ def content_based_recommendation(title, cosine_sim, df, user_preferences, all_ge
 
     return user_features, recommended_films
 
-def get_user_features(df, user_preferences, features_ml, scaler_ml):
+def get_user_features(df, user_preferences, features_ml, scaler_ml, all_genres):
     user_features = features_ml[df['title'] == user_preferences]
     return user_features if not user_features.empty else pd.DataFrame()
 
