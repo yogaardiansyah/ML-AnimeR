@@ -48,6 +48,11 @@ def map_user_data(user_data):
     # Ensure that only existing columns are selected
     existing_columns = user_data.columns
     selected_columns = [col for col in all_genres + ['media_type', 'mean', 'rating', 'start_season_year', 'status'] if col in existing_columns]
+    
+    if not selected_columns:
+        st.warning("No common columns found between genres and user data. Please check your data.")
+        return None
+
     user_data = user_data[selected_columns]
 
     print("User Data After Column Selection:")
@@ -58,6 +63,7 @@ def map_user_data(user_data):
     st.write(user_data)
 
     return user_data
+
 
 
 # Fungsi untuk membuat prediksi berdasarkan input pengguna
